@@ -18,8 +18,7 @@ bool timeZoneLoaded = false;
 
 /// Signature for callback that used to get and update the calendar
 /// state details.
-typedef UpdateCalendarState = void Function(
-    UpdateCalendarStateDetails updateCalendarStateDetails);
+typedef UpdateCalendarState = void Function(UpdateCalendarStateDetails updateCalendarStateDetails);
 
 //// Extra small devices (phones, 600px and down)
 //// @media only screen and (max-width: 600px) {...}
@@ -104,8 +103,7 @@ class CalendarViewHelper {
   }
 
   /// Return the localized date value based on locale and string format list.
-  static String getLocalizedString(
-      DateTime date, List<String> stringFormatList, String locale) {
+  static String getLocalizedString(DateTime date, List<String> stringFormatList, String locale) {
     String localizedString = '';
     for (int i = 0; i < stringFormatList.length; i++) {
       final String value = stringFormatList[i];
@@ -117,8 +115,7 @@ class CalendarViewHelper {
   }
 
   /// Return the localized date value based on locale and string format.
-  static String getFormattedString(
-      DateTime date, String currentStringFormat, String locale) {
+  static String getFormattedString(DateTime date, String currentStringFormat, String locale) {
     String formattedString = currentStringFormat;
     if (formattedString.isEmpty) {
       return formattedString;
@@ -127,8 +124,7 @@ class CalendarViewHelper {
     final String currentFormatText = currentStringFormat[0];
     bool isAlphabetCharacter(String character) {
       final int codeUnit = character.codeUnitAt(0);
-      return (codeUnit >= 65 && codeUnit <= 90) ||
-          (codeUnit >= 97 && codeUnit <= 122);
+      return (codeUnit >= 65 && codeUnit <= 90) || (codeUnit >= 97 && codeUnit <= 122);
     }
 
     if (!isAlphabetCharacter(currentFormatText)) {
@@ -160,10 +156,8 @@ class CalendarViewHelper {
 
   /// Check the date as current month date when the month leading and trailing
   /// dates not shown and its row count as 6.
-  static bool isCurrentMonthDate(int weekRowCount,
-      bool showLeadingTrailingDates, int currentMonth, DateTime date) {
-    if (isLeadingAndTrailingDatesVisible(
-        weekRowCount, showLeadingTrailingDates)) {
+  static bool isCurrentMonthDate(int weekRowCount, bool showLeadingTrailingDates, int currentMonth, DateTime date) {
+    if (isLeadingAndTrailingDatesVisible(weekRowCount, showLeadingTrailingDates)) {
       return true;
     }
 
@@ -175,14 +169,12 @@ class CalendarViewHelper {
   }
 
   /// Check the leading and trailing dates visible or not.
-  static bool isLeadingAndTrailingDatesVisible(
-      int weekRowCount, bool showLeadingTrailingDates) {
+  static bool isLeadingAndTrailingDatesVisible(int weekRowCount, bool showLeadingTrailingDates) {
     return weekRowCount != 6 || showLeadingTrailingDates;
   }
 
   /// Check both the dates collection dates are equal or not.
-  static bool isDateCollectionEqual(
-      List<DateTime>? originalDates, List<DateTime>? copyDates) {
+  static bool isDateCollectionEqual(List<DateTime>? originalDates, List<DateTime>? copyDates) {
     if (originalDates == copyDates) {
       return true;
     }
@@ -259,14 +251,10 @@ class CalendarViewHelper {
   /// Return schedule view appointment height and its value based on
   /// schedule view settings and month view settings.
   static double getScheduleAppointmentHeight(
-      MonthViewSettings? monthViewSettings,
-      ScheduleViewSettings? scheduleViewSettings) {
+      MonthViewSettings? monthViewSettings, ScheduleViewSettings? scheduleViewSettings) {
     return monthViewSettings != null
-        ? (monthViewSettings.agendaItemHeight == -1
-            ? 50
-            : monthViewSettings.agendaItemHeight)
-        : (scheduleViewSettings == null ||
-                scheduleViewSettings.appointmentItemHeight == -1
+        ? (monthViewSettings.agendaItemHeight == -1 ? 50 : monthViewSettings.agendaItemHeight)
+        : (scheduleViewSettings == null || scheduleViewSettings.appointmentItemHeight == -1
             ? 50
             : scheduleViewSettings.appointmentItemHeight);
   }
@@ -274,25 +262,18 @@ class CalendarViewHelper {
   /// Return schedule view all day appointment height and its value based on
   /// schedule view settings and month view settings.
   static double getScheduleAllDayAppointmentHeight(
-      MonthViewSettings? monthViewSettings,
-      ScheduleViewSettings? scheduleViewSettings) {
+      MonthViewSettings? monthViewSettings, ScheduleViewSettings? scheduleViewSettings) {
     return monthViewSettings != null
-        ? (monthViewSettings.agendaItemHeight == -1
-            ? 25
-            : monthViewSettings.agendaItemHeight)
-        : (scheduleViewSettings == null ||
-                scheduleViewSettings.appointmentItemHeight == -1
+        ? (monthViewSettings.agendaItemHeight == -1 ? 25 : monthViewSettings.agendaItemHeight)
+        : (scheduleViewSettings == null || scheduleViewSettings.appointmentItemHeight == -1
             ? 25
             : scheduleViewSettings.appointmentItemHeight);
   }
 
   /// Returns the height for an resource item to render the resource within
   /// it in the resource panel.
-  static double getResourceItemHeight(
-      double resourceViewSize,
-      double timelineViewHeight,
-      ResourceViewSettings resourceViewSettings,
-      int resourceCount) {
+  static double getResourceItemHeight(double resourceViewSize, double timelineViewHeight,
+      ResourceViewSettings resourceViewSettings, int resourceCount) {
     /// The combined padding value between the circle and the display name text
     final double textPadding = resourceViewSettings.showAvatar ? 10 : 0;
 
@@ -309,8 +290,7 @@ class CalendarViewHelper {
     /// have calculated the resource item height based on the resource panel
     /// width and the view height, the smallest of this will set as the
     /// resource item height.
-    if (timelineViewHeight > resourceViewSize &&
-        resourceViewSettings.visibleResourceCount < 0) {
+    if (timelineViewHeight > resourceViewSize && resourceViewSettings.visibleResourceCount < 0) {
       itemHeight = resourceViewSize + textPadding;
     }
 
@@ -318,15 +298,12 @@ class CalendarViewHelper {
     /// this scenario if the resource count is less, to avoid the empty white
     /// space on the screen height, we calculated the resource item height to
     /// fill into the available screen height.
-    return resourceCount * itemHeight < timelineViewHeight
-        ? timelineViewHeight / resourceCount
-        : itemHeight;
+    return resourceCount * itemHeight < timelineViewHeight ? timelineViewHeight / resourceCount : itemHeight;
   }
 
   /// Check and returns whether the resource panel can be added or not in the
   /// calendar.
-  static bool isResourceEnabled(
-      CalendarDataSource? dataSource, CalendarView view) {
+  static bool isResourceEnabled(CalendarDataSource? dataSource, CalendarView view) {
     return isTimelineView(view) &&
         dataSource != null &&
         dataSource.resources != null &&
@@ -339,10 +316,7 @@ class CalendarViewHelper {
     if (appointment.isAllDay) {
       return '${appointment.subject}All day';
     } else if (appointment.isSpanned ||
-        AppointmentHelper.getDifference(
-                    appointment.startTime, appointment.endTime)
-                .inDays >
-            0) {
+        AppointmentHelper.getDifference(appointment.startTime, appointment.endTime).inDays > 0) {
       // ignore: lines_longer_than_80_chars
       return '${appointment.subject}${DateFormat('hh mm a dd/MMMM/yyyy').format(appointment.startTime)}to${DateFormat('hh mm a dd/MMMM/yyyy').format(appointment.endTime)}';
     } else {
@@ -353,8 +327,8 @@ class CalendarViewHelper {
 
   /// Get the today text color based on today highlight color and today text
   /// style.
-  static Color? getTodayHighlightTextColor(Color? todayHighlightColor,
-      TextStyle? todayTextStyle, SfCalendarThemeData calendarTheme) {
+  static Color? getTodayHighlightTextColor(
+      Color? todayHighlightColor, TextStyle? todayTextStyle, SfCalendarThemeData calendarTheme) {
     Color? todayTextColor = todayHighlightColor;
     if (todayTextColor != null && todayTextColor == Colors.transparent) {
       todayTextColor = calendarTheme.todayTextStyle!.color;
@@ -365,12 +339,10 @@ class CalendarViewHelper {
 
   /// Get the exact the time from the position and the date time includes
   /// minutes value.
-  static double getTimeToPosition(Duration duration,
-      TimeSlotViewSettings timeSlotViewSettings, double minuteHeight) {
+  static double getTimeToPosition(Duration duration, TimeSlotViewSettings timeSlotViewSettings, double minuteHeight) {
     final int startHour = timeSlotViewSettings.startHour.toInt();
-    final Duration startDuration = Duration(
-        hours: startHour,
-        minutes: ((timeSlotViewSettings.startHour - startHour) * 60).toInt());
+    final Duration startDuration =
+        Duration(hours: startHour, minutes: ((timeSlotViewSettings.startHour - startHour) * 60).toInt());
     final Duration difference = duration - startDuration;
     return difference.isNegative ? 0 : difference.inMinutes * minuteHeight;
   }
@@ -386,9 +358,7 @@ class CalendarViewHelper {
     double defaultLinesCount = 24;
     double totalMinutes = 0;
 
-    if (settings.startHour >= 0 &&
-        settings.endHour >= settings.startHour &&
-        settings.endHour <= 24) {
+    if (settings.startHour >= 0 && settings.endHour >= settings.startHour && settings.endHour <= 24) {
       defaultLinesCount = settings.endHour - settings.startHour;
     }
 
@@ -399,8 +369,7 @@ class CalendarViewHelper {
         timeIntervalMinutes <= totalMinutes &&
         totalMinutes.round() % timeIntervalMinutes == 0) {
       return timeIntervalMinutes;
-    } else if (timeIntervalMinutes >= 0 &&
-        timeIntervalMinutes <= totalMinutes) {
+    } else if (timeIntervalMinutes >= 0 && timeIntervalMinutes <= totalMinutes) {
       return _getNearestValue(timeIntervalMinutes, totalMinutes);
     } else {
       return 60;
@@ -408,8 +377,7 @@ class CalendarViewHelper {
   }
 
   /// Returns the horizontal lines count for a single day in day/week/workweek and time line view
-  static double getHorizontalLinesCount(
-      TimeSlotViewSettings settings, CalendarView view) {
+  static double getHorizontalLinesCount(TimeSlotViewSettings settings, CalendarView view) {
     if (view == CalendarView.timelineMonth) {
       return 1;
     }
@@ -418,9 +386,7 @@ class CalendarViewHelper {
     double totalMinutes = 0;
     final int timeInterval = getTimeInterval(settings);
 
-    if (settings.startHour >= 0 &&
-        settings.endHour >= settings.startHour &&
-        settings.endHour <= 24) {
+    if (settings.startHour >= 0 && settings.endHour >= settings.startHour && settings.endHour <= 24) {
       defaultLinesCount = settings.endHour - settings.startHour;
     }
 
@@ -448,18 +414,11 @@ class CalendarViewHelper {
       return false;
     }
 
-    return isSameDate(date1, date2) &&
-        date1.hour == date2.hour &&
-        date1.minute == date2.minute;
+    return isSameDate(date1, date2) && date1.hour == date2.hour && date1.minute == date2.minute;
   }
 
   /// Return time label size based on calendar view of calendar widget.
-  static double getTimeLabelWidth(
-      double timeLabelViewWidth, CalendarView view) {
-    if (view == CalendarView.timelineMonth) {
-      return 0;
-    }
-
+  static double getTimeLabelWidth(double timeLabelViewWidth, CalendarView view) {
     if (timeLabelViewWidth != -1) {
       return timeLabelViewWidth;
     }
@@ -476,13 +435,12 @@ class CalendarViewHelper {
       case CalendarView.schedule:
       case CalendarView.month:
       case CalendarView.timelineMonth:
-        return 0;
+        return 30;
     }
   }
 
   /// Return the view header height based on calendar view of calendar widget.
-  static double getViewHeaderHeight(
-      double viewHeaderHeight, CalendarView view) {
+  static double getViewHeaderHeight(double viewHeaderHeight, CalendarView view) {
     if (viewHeaderHeight != -1) {
       return viewHeaderHeight;
     }
@@ -505,14 +463,9 @@ class CalendarViewHelper {
   }
 
   /// Check the calendar view is day or not.
-  static bool isDayView(CalendarView view, int numberOfDays,
-      List<int>? nonWorkingDays, int numberOfWeeks) {
-    final int daysCount = DateTimeHelper.getViewDatesCount(
-        view, numberOfWeeks, numberOfDays, nonWorkingDays);
-    if ((view == CalendarView.day ||
-            view == CalendarView.week ||
-            view == CalendarView.workWeek) &&
-        daysCount == 1) {
+  static bool isDayView(CalendarView view, int numberOfDays, List<int>? nonWorkingDays, int numberOfWeeks) {
+    final int daysCount = DateTimeHelper.getViewDatesCount(view, numberOfWeeks, numberOfDays, nonWorkingDays);
+    if ((view == CalendarView.day || view == CalendarView.week || view == CalendarView.workWeek) && daysCount == 1) {
       return true;
     }
     return false;
@@ -532,8 +485,7 @@ class CalendarViewHelper {
   }
 
   /// method to check whether the view changed callback can triggered or not.
-  static bool shouldRaiseViewChangedCallback(
-      ViewChangedCallback? onViewChanged) {
+  static bool shouldRaiseViewChangedCallback(ViewChangedCallback? onViewChanged) {
     return onViewChanged != null;
   }
 
@@ -543,70 +495,54 @@ class CalendarViewHelper {
   }
 
   /// method to check whether the long press callback can triggered or not.
-  static bool shouldRaiseCalendarLongPressCallback(
-      CalendarLongPressCallback? onLongPress) {
+  static bool shouldRaiseCalendarLongPressCallback(CalendarLongPressCallback? onLongPress) {
     return onLongPress != null;
   }
 
   //// method to check whether the selection changed callback can triggered or not.
-  static bool shouldRaiseCalendarSelectionChangedCallback(
-      CalendarSelectionChangedCallback? onSelectionChanged) {
+  static bool shouldRaiseCalendarSelectionChangedCallback(CalendarSelectionChangedCallback? onSelectionChanged) {
     return onSelectionChanged != null;
   }
 
   /// Method to check whether the appointment resize start callback can trigger
   /// or not.
-  static bool shouldRaiseAppointmentResizeStartCallback(
-      AppointmentResizeStartCallback? onAppointmentResizeStart) {
+  static bool shouldRaiseAppointmentResizeStartCallback(AppointmentResizeStartCallback? onAppointmentResizeStart) {
     return onAppointmentResizeStart != null;
   }
 
   /// Method to check whether the appointment resize update callback can trigger
   /// or not.
-  static bool shouldRaiseAppointmentResizeUpdateCallback(
-      AppointmentResizeUpdateCallback? onAppointmentResizeUpdate) {
+  static bool shouldRaiseAppointmentResizeUpdateCallback(AppointmentResizeUpdateCallback? onAppointmentResizeUpdate) {
     return onAppointmentResizeUpdate != null;
   }
 
   /// Method to check whether the appointment resize end callback can trigger
   /// or not.
-  static bool shouldRaiseAppointmentResizeEndCallback(
-      AppointmentResizeEndCallback? onAppointmentResizeEnd) {
+  static bool shouldRaiseAppointmentResizeEndCallback(AppointmentResizeEndCallback? onAppointmentResizeEnd) {
     return onAppointmentResizeEnd != null;
   }
 
   /// method that raise the calendar tapped callback with the given parameters
-  static void raiseCalendarTapCallback(
-      SfCalendar calendar,
-      DateTime? date,
-      List<dynamic>? appointments,
-      CalendarElement element,
-      CalendarResource? resource) {
+  static void raiseCalendarTapCallback(SfCalendar calendar, DateTime? date, List<dynamic>? appointments,
+      CalendarElement element, CalendarResource? resource) {
     calendar.onTap!(CalendarTapDetails(appointments, date, element, resource));
   }
 
   /// Method that raise the calendar long press callback with given parameters.
-  static void raiseCalendarLongPressCallback(
-      SfCalendar calendar,
-      DateTime? date,
-      List<dynamic>? appointments,
-      CalendarElement element,
-      CalendarResource? resource) {
-    calendar.onLongPress!(
-        CalendarLongPressDetails(appointments, date, element, resource));
+  static void raiseCalendarLongPressCallback(SfCalendar calendar, DateTime? date, List<dynamic>? appointments,
+      CalendarElement element, CalendarResource? resource) {
+    calendar.onLongPress!(CalendarLongPressDetails(appointments, date, element, resource));
   }
 
   /// method that raise the calendar selection changed callback
   /// with the given parameters
-  static void raiseCalendarSelectionChangedCallback(
-      SfCalendar calendar, DateTime? date, CalendarResource? resource) {
+  static void raiseCalendarSelectionChangedCallback(SfCalendar calendar, DateTime? date, CalendarResource? resource) {
     calendar.onSelectionChanged!(CalendarSelectionDetails(date, resource));
   }
 
   /// method that raises the visible dates changed callback with the given
   /// parameters
-  static void raiseViewChangedCallback(
-      SfCalendar calendar, List<DateTime> visibleDates) {
+  static void raiseViewChangedCallback(SfCalendar calendar, List<DateTime> visibleDates) {
     calendar.onViewChanged!(ViewChangedDetails(visibleDates));
   }
 
@@ -614,32 +550,22 @@ class CalendarViewHelper {
   /// parameters.
   static void raiseAppointmentResizeStartCallback(
       SfCalendar calendar, dynamic appointment, CalendarResource? resource) {
-    calendar.onAppointmentResizeStart!(
-        AppointmentResizeStartDetails(appointment, resource));
+    calendar.onAppointmentResizeStart!(AppointmentResizeStartDetails(appointment, resource));
   }
 
   /// Method  that raises the appointment resize update callback with the given
   /// parameters.
-  static void raiseAppointmentResizeUpdateCallback(
-      SfCalendar calendar,
-      dynamic appointment,
-      CalendarResource? resource,
-      DateTime? resizingTime,
-      Offset resizingOffset) {
-    calendar.onAppointmentResizeUpdate!(AppointmentResizeUpdateDetails(
-        appointment, resource, resizingTime, resizingOffset));
+  static void raiseAppointmentResizeUpdateCallback(SfCalendar calendar, dynamic appointment, CalendarResource? resource,
+      DateTime? resizingTime, Offset resizingOffset) {
+    calendar.onAppointmentResizeUpdate!(
+        AppointmentResizeUpdateDetails(appointment, resource, resizingTime, resizingOffset));
   }
 
   /// Method  that raises the appointment resize end callback with the given
   /// parameters.
   static void raiseAppointmentResizeEndCallback(
-      SfCalendar calendar,
-      dynamic appointment,
-      CalendarResource? resource,
-      DateTime? startTime,
-      DateTime? endTime) {
-    calendar.onAppointmentResizeEnd!(
-        AppointmentResizeEndDetails(appointment, resource, startTime, endTime));
+      SfCalendar calendar, dynamic appointment, CalendarResource? resource, DateTime? startTime, DateTime? endTime) {
+    calendar.onAppointmentResizeEnd!(AppointmentResizeEndDetails(appointment, resource, startTime, endTime));
   }
 
   /// Check the calendar view is timeline view or not.
@@ -661,8 +587,7 @@ class CalendarViewHelper {
 
   /// converts the given schedule appointment collection to their custom
   /// appointment collection
-  static List<dynamic> getCustomAppointments(
-      List<CalendarAppointment>? appointments, CalendarDataSource? dataSource) {
+  static List<dynamic> getCustomAppointments(List<CalendarAppointment>? appointments, CalendarDataSource? dataSource) {
     final List<dynamic> customAppointments = <dynamic>[];
     if (appointments == null) {
       return customAppointments;
@@ -676,18 +601,13 @@ class CalendarViewHelper {
   }
 
   /// Returns the appointment details with given appointment type.
-  static dynamic getAppointmentDetail(
-      CalendarAppointment appointment, CalendarDataSource? dataSource) {
-    if (appointment.recurrenceRule != null &&
-        appointment.recurrenceRule!.isNotEmpty) {
-      final Appointment appointmentObject =
-          appointment.convertToCalendarAppointment();
+  static dynamic getAppointmentDetail(CalendarAppointment appointment, CalendarDataSource? dataSource) {
+    if (appointment.recurrenceRule != null && appointment.recurrenceRule!.isNotEmpty) {
+      final Appointment appointmentObject = appointment.convertToCalendarAppointment();
       if (appointment.data is Appointment) {
         return appointmentObject;
       } else {
-        return dataSource!.convertAppointmentToObject(
-                appointment.data, appointmentObject) ??
-            appointmentObject;
+        return dataSource!.convertAppointmentToObject(appointment.data, appointmentObject) ?? appointmentObject;
       }
     } else {
       return appointment.data;
@@ -696,34 +616,29 @@ class CalendarViewHelper {
 
   /// Returns the index of the passed id's resource from the passed resource
   /// collection.
-  static int getResourceIndex(
-      List<CalendarResource>? resourceCollection, Object id) {
+  static int getResourceIndex(List<CalendarResource>? resourceCollection, Object id) {
     if (resourceCollection == null || resourceCollection.isEmpty) {
       return -1;
     }
 
-    return resourceCollection
-        .indexWhere((CalendarResource resource) => resource.id == id);
+    return resourceCollection.indexWhere((CalendarResource resource) => resource.id == id);
   }
 
   /// Check the date in between first and last date
-  static bool isDateTimeWithInDateTimeRange(
-      DateTime startDate, DateTime endDate, DateTime date, int timeInterval) {
+  static bool isDateTimeWithInDateTimeRange(DateTime startDate, DateTime endDate, DateTime date, int timeInterval) {
     if (startDate.isAfter(endDate)) {
       final dynamic temp = startDate;
       startDate = endDate;
       endDate = DateTimeHelper.getDateTimeValue(temp);
     }
 
-    if (isSameOrBeforeDateTime(endDate, date) &&
-        isSameOrAfterDateTime(startDate, date)) {
+    if (isSameOrBeforeDateTime(endDate, date) && isSameOrAfterDateTime(startDate, date)) {
       return true;
     }
 
     if (startDate.minute != 0) {
       date = date.add(Duration(minutes: timeInterval));
-      if (isSameOrBeforeDateTime(endDate, date) &&
-          isSameOrAfterDateTime(startDate, date)) {
+      if (isSameOrBeforeDateTime(endDate, date) && isSameOrAfterDateTime(startDate, date)) {
         return true;
       }
     }
@@ -733,19 +648,17 @@ class CalendarViewHelper {
 
   /// Check the date before/same of last date
   static bool isSameOrBeforeDateTime(DateTime lastDate, DateTime date) {
-    return CalendarViewHelper.isSameTimeSlot(lastDate, date) ||
-        lastDate.isAfter(date);
+    return CalendarViewHelper.isSameTimeSlot(lastDate, date) || lastDate.isAfter(date);
   }
 
   /// Check the date after/same of first date
   static bool isSameOrAfterDateTime(DateTime firstDate, DateTime date) {
-    return CalendarViewHelper.isSameTimeSlot(firstDate, date) ||
-        firstDate.isBefore(date);
+    return CalendarViewHelper.isSameTimeSlot(firstDate, date) || firstDate.isBefore(date);
   }
 
   /// Method to switch the views based on the keyboard interaction.
-  static KeyEventResult handleViewSwitchKeyBoardEvent(KeyEvent event,
-      CalendarController controller, List<CalendarView>? allowedViews) {
+  static KeyEventResult handleViewSwitchKeyBoardEvent(
+      KeyEvent event, CalendarController controller, List<CalendarView>? allowedViews) {
     /// Ctrl + and Ctrl - used by browser to zoom the page, hence as referred
     /// EJ2 scheduler, we have used alt + numeric to switch between views in
     /// calendar web and windows
@@ -772,9 +685,7 @@ class CalendarViewHelper {
       }
     }
 
-    if (allowedViews != null &&
-        allowedViews.isNotEmpty &&
-        !allowedViews.contains(view)) {
+    if (allowedViews != null && allowedViews.isNotEmpty && !allowedViews.contains(view)) {
       return KeyEventResult.ignored;
     }
 
@@ -783,11 +694,8 @@ class CalendarViewHelper {
   }
 
   /// Check the showWeekNumber is true or not and returns the position.
-  static double getWeekNumberPanelWidth(
-      bool showWeekNumber, double width, bool isMobilePlatform) {
-    return showWeekNumber
-        ? (width / (DateTime.daysPerWeek + 1)) / (isMobilePlatform ? 1.3 : 4)
-        : 0;
+  static double getWeekNumberPanelWidth(bool showWeekNumber, double width, bool isMobilePlatform) {
+    return showWeekNumber ? (width / (DateTime.daysPerWeek + 1)) / (isMobilePlatform ? 1.3 : 4) : 0;
   }
 
   /// Method to check that the current dragging appointment range contains any
@@ -810,10 +718,8 @@ class CalendarViewHelper {
             (!isDateWithInDateRange(minDate, maxDate, appStartTime) ||
                 !isDateWithInDateRange(minDate, maxDate, appEndTime))) ||
         (!isMonthView &&
-            (!CalendarViewHelper.isDateTimeWithInDateTimeRange(
-                    minDate, maxDate, appStartTime, timeInterval) ||
-                !CalendarViewHelper.isDateTimeWithInDateTimeRange(
-                    minDate, maxDate, appEndTime, timeInterval)))) {
+            (!CalendarViewHelper.isDateTimeWithInDateTimeRange(minDate, maxDate, appStartTime, timeInterval) ||
+                !CalendarViewHelper.isDateTimeWithInDateTimeRange(minDate, maxDate, appEndTime, timeInterval)))) {
       return true;
     }
 
@@ -823,8 +729,7 @@ class CalendarViewHelper {
     if (isMonthView) {
       for (int i = 0; i < blackoutDates.length; i++) {
         final DateTime blackoutDate = blackoutDates[i];
-        if (isSameOrBeforeDate(appEndTime, blackoutDate) &&
-            isSameOrAfterDate(appStartTime, blackoutDate)) {
+        if (isSameOrBeforeDate(appEndTime, blackoutDate) && isSameOrAfterDate(appStartTime, blackoutDate)) {
           return true;
         }
       }
@@ -1104,30 +1009,24 @@ class CalendarAppointment {
       otherAppointment = other;
     }
 
-    return CalendarViewHelper.isSameTimeSlot(
-            otherAppointment.startTime, startTime) &&
+    return CalendarViewHelper.isSameTimeSlot(otherAppointment.startTime, startTime) &&
         CalendarViewHelper.isSameTimeSlot(otherAppointment.endTime, endTime) &&
-        CalendarViewHelper.isSameTimeSlot(
-            otherAppointment.actualStartTime, actualStartTime) &&
-        CalendarViewHelper.isSameTimeSlot(
-            otherAppointment.actualEndTime, actualEndTime) &&
+        CalendarViewHelper.isSameTimeSlot(otherAppointment.actualStartTime, actualStartTime) &&
+        CalendarViewHelper.isSameTimeSlot(otherAppointment.actualEndTime, actualEndTime) &&
         otherAppointment.isSpanned == isSpanned &&
         otherAppointment.startTimeZone == startTimeZone &&
         otherAppointment.endTimeZone == endTimeZone &&
         otherAppointment.isAllDay == isAllDay &&
         otherAppointment.notes == notes &&
         otherAppointment.location == location &&
-        CalendarViewHelper.isCollectionEqual(
-            otherAppointment.resourceIds, resourceIds) &&
+        CalendarViewHelper.isCollectionEqual(otherAppointment.resourceIds, resourceIds) &&
         otherAppointment.recurrenceId == recurrenceId &&
         otherAppointment.id == id &&
         otherAppointment.data == data &&
         otherAppointment.subject == subject &&
         otherAppointment.color == color &&
         otherAppointment.recurrenceRule == recurrenceRule &&
-        CalendarViewHelper.isDateCollectionEqual(
-            otherAppointment.recurrenceExceptionDates,
-            recurrenceExceptionDates);
+        CalendarViewHelper.isDateCollectionEqual(otherAppointment.recurrenceExceptionDates, recurrenceExceptionDates);
   }
 
   @override
@@ -1151,9 +1050,7 @@ class CalendarAppointment {
       endTime,
       subject,
       color,
-      recurrenceExceptionDates == null
-          ? null
-          : Object.hashAll(recurrenceExceptionDates!),
+      recurrenceExceptionDates == null ? null : Object.hashAll(recurrenceExceptionDates!),
     );
   }
 }
@@ -1249,10 +1146,8 @@ class CalendarTimeRegion {
         color: color ?? this.color,
         recurrenceRule: recurrenceRule ?? this.recurrenceRule,
         textStyle: textStyle ?? this.textStyle,
-        enablePointerInteraction:
-            enablePointerInteraction ?? this.enablePointerInteraction,
-        recurrenceExceptionDates:
-            recurrenceExceptionDates ?? this.recurrenceExceptionDates,
+        enablePointerInteraction: enablePointerInteraction ?? this.enablePointerInteraction,
+        recurrenceExceptionDates: recurrenceExceptionDates ?? this.recurrenceExceptionDates,
         text: text ?? this.text,
         iconData: iconData ?? this.iconData,
         timeZone: timeZone ?? this.timeZone,
@@ -1276,15 +1171,12 @@ class CalendarTimeRegion {
     return region.textStyle == textStyle &&
         CalendarViewHelper.isSameTimeSlot(region.startTime, startTime) &&
         CalendarViewHelper.isSameTimeSlot(region.endTime, endTime) &&
-        CalendarViewHelper.isSameTimeSlot(
-            region.actualStartTime, actualStartTime) &&
-        CalendarViewHelper.isSameTimeSlot(
-            region.actualStartTime, actualStartTime) &&
+        CalendarViewHelper.isSameTimeSlot(region.actualStartTime, actualStartTime) &&
+        CalendarViewHelper.isSameTimeSlot(region.actualStartTime, actualStartTime) &&
         region.color == color &&
         region.recurrenceRule == recurrenceRule &&
         region.enablePointerInteraction == enablePointerInteraction &&
-        CalendarViewHelper.isDateCollectionEqual(
-            region.recurrenceExceptionDates, recurrenceExceptionDates) &&
+        CalendarViewHelper.isDateCollectionEqual(region.recurrenceExceptionDates, recurrenceExceptionDates) &&
         region.iconData == iconData &&
         region.timeZone == timeZone &&
         region.resourceIds == resourceIds &&
@@ -1304,9 +1196,7 @@ class CalendarTimeRegion {
 
         /// Below condition is referred from text style class
         /// https://api.flutter.dev/flutter/painting/TextStyle/hashCode.html
-        recurrenceExceptionDates == null
-            ? null
-            : Object.hashAll(recurrenceExceptionDates!),
+        recurrenceExceptionDates == null ? null : Object.hashAll(recurrenceExceptionDates!),
         resourceIds == null ? null : Object.hashAll(resourceIds!),
         text,
         iconData,

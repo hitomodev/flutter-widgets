@@ -854,7 +854,8 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
 
       double appointmentHeight = timelineAppointmentHeight;
       if (appointmentHeight * appointmentView.maxPositions > slotHeight) {
-        appointmentHeight = slotHeight / appointmentView.maxPositions;
+        // appointmentHeight = slotHeight / appointmentView.maxPositions;
+        appointmentHeight = slotHeight;
       }
 
       xPosition = column * viewWidth;
@@ -866,7 +867,9 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
       }
 
       xPosition += timePosition;
-      yPosition = appointmentHeight * appointmentView.position;
+      // yPosition = appointmentHeight * appointmentView.position;
+      yPosition = 0;
+      print('ABAStudio yPosition: $yPosition appointmentView.position: ${appointmentView.position}');
       if (isResourceEnabled && appointment.resourceIds != null && appointment.resourceIds!.isNotEmpty) {
         /// To render the appointment on specific resource slot, we have got the
         /// appointment's resource index  and calculated y position based on
@@ -1482,7 +1485,6 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
         if (appointmentView.appointment == null || child == null || appointmentView.appointmentRect == null) {
           continue;
         }
-
         context.paintChild(child, Offset(appointmentView.appointmentRect!.left, appointmentView.appointmentRect!.top));
         _updateAppointmentHovering(appointmentView.appointmentRect!, context.canvas);
 
@@ -1501,6 +1503,8 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
         }
 
         final RRect moreRegionRect = monthAppointmentCountViews[keys[i]]!;
+        print(
+            'ABAStudio moreRegionRect: ${moreRegionRect.left} ${moreRegionRect.top} ${moreRegionRect.right} ${moreRegionRect.bottom}');
         context.paintChild(child, Offset(moreRegionRect.left, moreRegionRect.top));
         _updateAppointmentHovering(moreRegionRect, context.canvas);
 
@@ -1576,6 +1580,8 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       }
 
       final RRect appointmentRect = appointmentView.appointmentRect!;
+      print(
+          'ABAStudio appointmentRect: ${appointmentRect.left} ${appointmentRect.top} ${appointmentRect.right} ${appointmentRect.bottom}');
       if (appointmentView.position < maximumDisplayCount ||
           (appointmentView.position == maximumDisplayCount && appointmentView.maxPositions == maximumDisplayCount)) {
         final CalendarAppointment appointment = appointmentView.appointment!;

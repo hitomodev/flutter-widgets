@@ -1122,7 +1122,7 @@ class TimelineViewHeaderView extends CustomPainter {
   double _xPosition = 0;
   final TextPainter _dayTextPainter = TextPainter(), _dateTextPainter = TextPainter();
   final Paint _hoverPainter = Paint();
-
+  final Paint _highlightPainter = Paint();
   @override
   void paint(Canvas canvas, Size size) {
     canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -1186,6 +1186,15 @@ class TimelineViewHeaderView extends CustomPainter {
 
       final bool isBlackoutDate = CalendarViewHelper.isDateInDateCollection(blackoutDates, currentDate);
       final bool isWeekend = currentDate.weekday == DateTime.saturday || currentDate.weekday == DateTime.sunday;
+      final bool isToday = isSameDate(currentDate, today);
+      _highlightPainter.color = isToday
+          ? timeSlotViewSettings.todayBackgroundColor ?? calendarTheme.cellBorderColor!
+          : isWeekend
+              ? timeSlotViewSettings.weekendBackgroundColor ?? calendarTheme.cellBorderColor!
+              : Colors.transparent;
+
+      canvas.drawRect(Rect.fromLTWH(_xPosition, 0, childWidth, size.height), _highlightPainter);
+
       if (isSameDate(currentDate, today)) {
         dayTextStyle = todayTextStyle != null
             ? calendarTheme.todayTextStyle!.copyWith(fontSize: viewHeaderDayStyle.fontSize, color: todayTextColor)
@@ -1194,8 +1203,8 @@ class TimelineViewHeaderView extends CustomPainter {
             ? calendarTheme.todayTextStyle!.copyWith(fontSize: viewHeaderDateStyle.fontSize, color: todayTextColor)
             : viewHeaderDateStyle.copyWith(color: todayTextColor);
       } else if (isWeekend) {
-        dayTextStyle = viewHeaderDayStyle.copyWith(color: Colors.blueGrey);
-        dateTextStyle = viewHeaderDateStyle.copyWith(color: Colors.blueGrey);
+        dayTextStyle = viewHeaderDayStyle.copyWith(color: timeSlotViewSettings.weekendTextColor ?? Colors.blueGrey);
+        dateTextStyle = viewHeaderDateStyle.copyWith(color: timeSlotViewSettings.weekendTextColor ?? Colors.blueGrey);
       } else {
         dateTextStyle = viewHeaderDateStyle;
         dayTextStyle = viewHeaderDayStyle;

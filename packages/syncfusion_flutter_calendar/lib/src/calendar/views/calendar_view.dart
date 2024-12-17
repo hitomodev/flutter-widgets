@@ -7253,6 +7253,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
           widget.calendar.dataSource!.resources!.length);
       height = resourceItemHeight * widget.resourceCollection!.length;
     }
+    print('ABAStudio viewHeaderHeight: $viewHeaderHeight width: $width height: $height locale: $locale');
     return Stack(children: <Widget>[
       Positioned(
         top: 0,
@@ -10400,6 +10401,8 @@ class _TimeRulerView extends CustomPainter {
     yPosition = timeIntervalHeight;
     _linePainter.strokeWidth = offset;
     _linePainter.color = cellBorderColor ?? calendarTheme.cellBorderColor!;
+    final Paint backgroundPainter = Paint();
+    backgroundPainter.color = cellBorderColor ?? calendarTheme.cellBorderColor!;
 
     if (!isTimelineView) {
       final double lineXPosition = isRTL ? offset : size.width - offset;
@@ -10412,7 +10415,7 @@ class _TimeRulerView extends CustomPainter {
     _textPainter.textScaler = TextScaler.linear(textScaleFactor);
 
     final TextStyle timeTextStyle = calendarTheme.timeTextStyle!;
-    final TextStyle todayStyle = calendarTheme.timeTextStyle!.copyWith(color: todayHighlightColor);
+    final TextStyle todayStyle = calendarTheme.timeTextStyle!.copyWith(color: calendarTheme.todayTextStyle!.color);
     final TextStyle weekendStyle = calendarTheme.timeTextStyle!.copyWith(color: Colors.blueGrey);
     // detect weekend
 
@@ -10427,6 +10430,14 @@ class _TimeRulerView extends CustomPainter {
         if (dayOfWeek == DateTime.saturday || dayOfWeek == DateTime.sunday) {
           isWeekend = true;
         }
+        final bool isToday = isSameDate(date, DateTime.now());
+        backgroundPainter.color = isWeekend
+            ? (timeSlotViewSettings.weekendBackgroundColor ?? calendarTheme.cellBorderColor!)
+            : isToday
+                ? (timeSlotViewSettings.todayBackgroundColor ?? calendarTheme.cellBorderColor!)
+                : Colors.transparent;
+        print('ABAStudio xPosition: $xPosition isWeekend: $isWeekend width: ${size.width} height: ${size.height}');
+        canvas.drawRect(Rect.fromLTWH(xPosition, 0, timelineViewWidth, size.height), backgroundPainter);
         _drawTimeLabels(
             canvas,
             size,
@@ -10434,7 +10445,7 @@ class _TimeRulerView extends CustomPainter {
             hour,
             xPosition,
             yPosition,
-            isSameDate(date, DateTime.now())
+            isToday
                 ? todayStyle
                 : isWeekend
                     ? weekendStyle

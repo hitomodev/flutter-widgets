@@ -36,7 +36,11 @@ class ViewHeaderStyle with Diagnosticable {
   ///
   /// The properties allows to customize the view header view of [SfCalendar].
   const ViewHeaderStyle(
-      {this.backgroundColor, this.dateTextStyle, this.dayTextStyle});
+      {this.backgroundColor,
+      this.dateTextStyle,
+      this.dayTextStyle,
+      this.todayBackgroundColor,
+      this.weekendBackgroundColor});
 
   /// The color which fills the background of [SfCalendar] view header view.
   ///
@@ -131,6 +135,16 @@ class ViewHeaderStyle with Diagnosticable {
   /// ```
   final TextStyle? dayTextStyle;
 
+  /// The background color for today's date in the view header.
+  ///
+  /// Defaults to null.
+  final Color? todayBackgroundColor;
+
+  /// The background color for weekend dates in the view header.
+  ///
+  /// Defaults to null.
+  final Color? weekendBackgroundColor;
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -146,17 +160,19 @@ class ViewHeaderStyle with Diagnosticable {
     }
     return otherStyle.backgroundColor == backgroundColor &&
         otherStyle.dayTextStyle == dayTextStyle &&
-        otherStyle.dateTextStyle == dateTextStyle;
+        otherStyle.dateTextStyle == dateTextStyle &&
+        otherStyle.todayBackgroundColor == todayBackgroundColor &&
+        otherStyle.weekendBackgroundColor == weekendBackgroundColor;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(DiagnosticsProperty<TextStyle>('dayTextStyle', dayTextStyle));
-    properties
-        .add(DiagnosticsProperty<TextStyle>('dateTextStyle', dateTextStyle));
+    properties.add(DiagnosticsProperty<TextStyle>('dayTextStyle', dayTextStyle));
+    properties.add(DiagnosticsProperty<TextStyle>('dateTextStyle', dateTextStyle));
     properties.add(ColorProperty('backgroundColor', backgroundColor));
+    properties.add(ColorProperty('todayBackgroundColor', todayBackgroundColor));
+    properties.add(ColorProperty('weekendBackgroundColor', weekendBackgroundColor));
   }
 
   @override
@@ -165,6 +181,8 @@ class ViewHeaderStyle with Diagnosticable {
       backgroundColor,
       dayTextStyle,
       dateTextStyle,
+      todayBackgroundColor,
+      weekendBackgroundColor,
     );
   }
 }

@@ -869,7 +869,6 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
       xPosition += timePosition;
       // yPosition = appointmentHeight * appointmentView.position;
       yPosition = 0;
-      print('ABAStudio yPosition: $yPosition appointmentView.position: ${appointmentView.position}');
       if (isResourceEnabled && appointment.resourceIds != null && appointment.resourceIds!.isNotEmpty) {
         /// To render the appointment on specific resource slot, we have got the
         /// appointment's resource index  and calculated y position based on

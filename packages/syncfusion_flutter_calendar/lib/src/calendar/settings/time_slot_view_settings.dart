@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import '../../../calendar.dart';
 
 /// The settings have properties which allow to customize the time slot views
@@ -72,6 +73,9 @@ class TimeSlotViewSettings with Diagnosticable {
       this.timeRulerSize = -1,
       this.timeTextStyle,
       this.allDayPanelColor,
+      this.todayBackgroundColor,
+      this.weekendBackgroundColor,
+      this.weekendTextColor,
       this.numberOfDaysInView = -1})
       : assert(startHour >= 0 && startHour <= 24),
         assert(endHour >= 0 && endHour <= 24),
@@ -665,6 +669,9 @@ class TimeSlotViewSettings with Diagnosticable {
   ///  }
   /// ```
   final Color? allDayPanelColor;
+  final Color? todayBackgroundColor;
+  final Color? weekendBackgroundColor;
+  final Color? weekendTextColor;
 
   /// The number of days count in week in the [SfCalendar].
   ///
@@ -717,29 +724,32 @@ class TimeSlotViewSettings with Diagnosticable {
         otherStyle.dateFormat == dateFormat &&
         otherStyle.dayFormat == dayFormat &&
         otherStyle.timeRulerSize == timeRulerSize &&
-        otherStyle.timeTextStyle == timeTextStyle;
+        otherStyle.timeTextStyle == timeTextStyle &&
+        otherStyle.todayBackgroundColor == todayBackgroundColor &&
+        otherStyle.weekendBackgroundColor == weekendBackgroundColor &&
+        otherStyle.weekendTextColor == weekendTextColor;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-        .add(DiagnosticsProperty<TextStyle>('timeTextStyle', timeTextStyle));
+    properties.add(DiagnosticsProperty<TextStyle>('timeTextStyle', timeTextStyle));
     properties.add(DoubleProperty('startHour', startHour));
     properties.add(DoubleProperty('endHour', endHour));
     properties.add(IterableProperty<int>('nonWorkingDays', nonWorkingDays));
     properties.add(DiagnosticsProperty<Duration>('timeInterval', timeInterval));
     properties.add(DoubleProperty('timeIntervalHeight', timeIntervalHeight));
     properties.add(DoubleProperty('timeIntervalWidth', timeIntervalWidth));
-    properties.add(
-        DoubleProperty('timelineAppointmentHeight', timelineAppointmentHeight));
-    properties.add(DiagnosticsProperty<Duration>(
-        'minimumAppointmentDuration', minimumAppointmentDuration));
+    properties.add(DoubleProperty('timelineAppointmentHeight', timelineAppointmentHeight));
+    properties.add(DiagnosticsProperty<Duration>('minimumAppointmentDuration', minimumAppointmentDuration));
     properties.add(DoubleProperty('timeRulerSize', timeRulerSize));
     properties.add(StringProperty('timeFormat', timeFormat));
     properties.add(StringProperty('dateFormat', dateFormat));
     properties.add(StringProperty('dayFormat', dayFormat));
     properties.add(IntProperty('numberOfDaysInView', numberOfDaysInView));
+    properties.add(ColorProperty('todayBackgroundColor', todayBackgroundColor));
+    properties.add(ColorProperty('weekendBackgroundColor', weekendBackgroundColor));
+    properties.add(ColorProperty('weekendTextColor', weekendTextColor));
   }
 
   @override
@@ -757,6 +767,9 @@ class TimeSlotViewSettings with Diagnosticable {
         dateFormat,
         dayFormat,
         timeRulerSize,
-        timeTextStyle);
+        timeTextStyle,
+        todayBackgroundColor,
+        weekendBackgroundColor,
+        weekendTextColor);
   }
 }

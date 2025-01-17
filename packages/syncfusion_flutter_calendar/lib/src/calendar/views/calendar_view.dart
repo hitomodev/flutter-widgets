@@ -7253,7 +7253,6 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
           widget.calendar.dataSource!.resources!.length);
       height = resourceItemHeight * widget.resourceCollection!.length;
     }
-    print('ABAStudio viewHeaderHeight: $viewHeaderHeight width: $width height: $height locale: $locale');
     return Stack(children: <Widget>[
       Positioned(
         top: 0,
@@ -10436,7 +10435,6 @@ class _TimeRulerView extends CustomPainter {
             : isToday
                 ? (timeSlotViewSettings.todayBackgroundColor ?? calendarTheme.cellBorderColor!)
                 : Colors.transparent;
-        print('ABAStudio xPosition: $xPosition isWeekend: $isWeekend width: ${size.width} height: ${size.height}');
         canvas.drawRect(Rect.fromLTWH(xPosition, 0, timelineViewWidth, size.height), backgroundPainter);
         _drawTimeLabels(
             canvas,

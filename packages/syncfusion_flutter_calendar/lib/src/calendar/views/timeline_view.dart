@@ -1187,10 +1187,10 @@ class TimelineViewHeaderView extends CustomPainter {
       final bool isBlackoutDate = CalendarViewHelper.isDateInDateCollection(blackoutDates, currentDate);
       final bool isWeekend = currentDate.weekday == DateTime.saturday || currentDate.weekday == DateTime.sunday;
       final bool isToday = isSameDate(currentDate, today);
-      _highlightPainter.color = isToday
-          ? timeSlotViewSettings.todayBackgroundColor ?? calendarTheme.cellBorderColor!
-          : isWeekend
-              ? timeSlotViewSettings.weekendBackgroundColor ?? calendarTheme.cellBorderColor!
+      _highlightPainter.color = isWeekend
+          ? timeSlotViewSettings.weekendBackgroundColor ?? calendarTheme.cellBorderColor!
+          : isToday
+              ? timeSlotViewSettings.todayBackgroundColor ?? calendarTheme.cellBorderColor!
               : Colors.transparent;
 
       canvas.drawRect(Rect.fromLTWH(_xPosition, 0, childWidth, size.height), _highlightPainter);

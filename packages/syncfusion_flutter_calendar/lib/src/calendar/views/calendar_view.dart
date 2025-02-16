@@ -7304,7 +7304,10 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
           bottom: 0,
           child: Scrollbar(
             controller: _scrollController,
-            thumbVisibility: !widget.isMobilePlatform,
+            thumbVisibility: false,
+            trackVisibility: false,
+            interactive: false,
+            thickness: 0,
             child: ListView(
                 padding: EdgeInsets.zero,
                 controller: _scrollController,

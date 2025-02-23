@@ -1258,3 +1258,15 @@ abstract class CustomCalendarRenderObject extends RenderBox
   /// Returns a function that builds semantic information for the render object.
   SemanticsBuilderCallback? get semanticsBuilder => null;
 }
+
+@immutable
+class AllDayPanelSelectionDetails {
+  /// Constructor to create the selection details.
+  const AllDayPanelSelectionDetails(this.appointmentView, this.selectedDate);
+
+  /// Holds the selected appointment view details.
+  final AppointmentView? appointmentView;
+
+  /// Holds the selected date details.
+  final DateTime? selectedDate;
+}

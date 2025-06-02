@@ -7787,12 +7787,15 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
               canRaiseSelectionChanged, previousSelectedDate, selectedResource, previousSelectedResourceIndex);
         } else {
           if (canRaiseTap) {
+            final List<AppointmentView>? appointmentViews =
+                _appointmentLayout.getAppointmentViewsOnPoint(xPosition, yPosition);
+
             CalendarViewHelper.raiseCalendarTapCallback(
                 widget.calendar,
                 selectedDate,
-                <dynamic>[
-                  CalendarViewHelper.getAppointmentDetail(appointmentView.appointment!, widget.calendar.dataSource)
-                ],
+                appointmentViews
+                    ?.map((e) => CalendarViewHelper.getAppointmentDetail(e.appointment!, widget.calendar.dataSource))
+                    .toList(),
                 CalendarElement.appointment,
                 selectedResource);
           } else if (canRaiseLongPress) {

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -195,7 +196,10 @@ class SfCalendar extends StatefulWidget {
     this.scheduleViewSettings = const ScheduleViewSettings(),
     DateTime? minDate,
     DateTime? maxDate,
-    this.appointmentTextStyle = const TextStyle(color: Colors.white, fontSize: -1, fontWeight: FontWeight.w500),
+    this.appointmentTextStyle = const TextStyle(
+      fontSize: 10,
+      color: Colors.white,
+    ),
     this.showNavigationArrow = false,
     this.showDatePickerButton = false,
     this.showTodayButton = false,
@@ -2955,6 +2959,8 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
     _isRTL = CalendarViewHelper.isRTLLayout(context);
     _themeData = Theme.of(context);
     _calendarTheme = _getThemeDataValue(SfCalendarTheme.of(context), _themeData);
+    print('ABAStudio HITLE 123 ${widget.timeRegionBuilder}');
+
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       _minWidth = constraints.maxWidth == double.infinity ? _minWidth : constraints.maxWidth;
       _minHeight = constraints.maxHeight == double.infinity ? _minHeight : constraints.maxHeight;
@@ -5970,6 +5976,8 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
             null);
       }
     } else {
+      log('ABAStudio _raiseCallbackForScheduleView');
+
       /// Calculate the touch position appointment from its collection.
       double currentYPosition = padding;
       final double itemHeight = CalendarViewHelper.getScheduleAppointmentHeight(null, widget.scheduleViewSettings);

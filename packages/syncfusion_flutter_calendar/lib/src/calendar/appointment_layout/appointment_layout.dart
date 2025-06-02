@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -101,6 +102,16 @@ class AppointmentLayout extends StatefulWidget {
         // ignore: avoid_as
         appointmentLayoutKey.currentState! as _AppointmentLayoutState;
     return state._getAppointmentViewOnPoint(x, y);
+  }
+
+  /// Return the appointment view based on x and y position.
+  List<AppointmentView>? getAppointmentViewsOnPoint(double x, double y) {
+    // ignore: avoid_as
+    final GlobalKey appointmentLayoutKey = key! as GlobalKey;
+    final _AppointmentLayoutState state =
+        // ignore: avoid_as
+        appointmentLayoutKey.currentState! as _AppointmentLayoutState;
+    return state._getAppointmentViewsOnPoint(x, y);
   }
 
   /// Returns the visible appointment view collection.
@@ -313,6 +324,42 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
         if (rect != null && rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y) {
           selectedAppointmentView = AppointmentView()..appointmentRect = rect;
           break;
+        }
+      }
+    }
+
+    return selectedAppointmentView;
+  }
+
+  List<AppointmentView>? _getAppointmentViewsOnPoint(double x, double y) {
+    if (_appointmentCollection.isEmpty) {
+      return null;
+    }
+
+    final List<AppointmentView> selectedAppointmentView = [];
+    for (int i = 0; i < _appointmentCollection.length; i++) {
+      final AppointmentView appointmentView = _appointmentCollection[i];
+      if (appointmentView.appointment != null &&
+          appointmentView.appointmentRect != null &&
+          appointmentView.appointmentRect!.left <= x &&
+          appointmentView.appointmentRect!.right >= x &&
+          appointmentView.appointmentRect!.top <= y &&
+          appointmentView.appointmentRect!.bottom >= y) {
+        selectedAppointmentView.add(appointmentView);
+      }
+    }
+
+    if (selectedAppointmentView == null &&
+        widget.view == CalendarView.month &&
+        widget.calendar.monthViewSettings.appointmentDisplayMode == MonthAppointmentDisplayMode.appointment) {
+      final List<int> keys = _monthAppointmentCountViews.keys.toList();
+      for (int i = 0; i < keys.length; i++) {
+        // ignore: unnecessary_nullable_for_final_variable_declarations
+        final RRect? rect = _monthAppointmentCountViews[keys[i]];
+
+        if (rect != null && rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y) {
+          selectedAppointmentView.add(AppointmentView()..appointmentRect = rect);
+          // break;
         }
       }
     }
@@ -755,6 +802,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
   }
 
   void _updateTimelineAppointmentDetails(List<CalendarAppointment> visibleAppointments) {
+    log('ABAStudio _updateTimelineAppointmentDetails');
     final bool isResourceEnabled = CalendarViewHelper.isResourceEnabled(widget.calendar.dataSource, widget.view);
 
     /// Filters the appointment for each resource from the visible appointment
@@ -898,13 +946,61 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
             widget.timeIntervalHeight);
         width = width > minWidth ? width : minWidth;
       }
+      final DateTime appStartTime = appointment.exactStartTime;
+      final DateTime appEndTime = appointment.exactEndTime;
+      final DateTime viewStartDate = AppointmentHelper.convertToStartTime(widget.visibleDates[0]);
+      final DateTime viewEndDate =
+          AppointmentHelper.convertToEndTime(widget.visibleDates[widget.visibleDates.length - 1]);
 
-      final Radius cornerRadius = Radius.circular((appointmentHeight * 0.1) > 2 ? 2 : (appointmentHeight * 0.1));
-      width = width > 1 ? width - 1 : 0;
-      final RRect rect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(widget.isRTL ? xPosition - width : xPosition, yPosition, width,
-              appointmentHeight > 1 ? appointmentHeight - 1 : 0),
-          cornerRadius);
+      final bool canForwardSpanIcon =
+          AppointmentHelper.canAddForwardSpanIcon(appStartTime, appEndTime, viewStartDate, viewEndDate);
+      final bool canBackwardSpanIcon =
+          AppointmentHelper.canAddBackwardSpanIcon(appStartTime, appEndTime, viewStartDate, viewEndDate);
+      // if can forward just radius top left and bottom left
+      // it can backward just radius top right and bottom right
+      final double widthToUse = width > 1 ? width - 1 : 0;
+      const double verticalPadding = 8.0;
+      double heightToUse;
+      double yPositionToUse = yPosition;
+      if (appointment.subject.isNotEmpty) {
+        heightToUse = appointmentHeight > 1 ? appointmentHeight - verticalPadding : 0;
+        // Center the rect vertically in the slot
+        yPositionToUse = yPosition + (appointmentHeight - heightToUse) / 2;
+      } else {
+        heightToUse = appointmentHeight > 1 ? appointmentHeight : 0;
+        // yPositionToUse remains yPosition
+      }
+      BorderRadius borderRadius;
+      final double radiusValue = appointmentHeight / 2;
+      if (appointment.subject.isEmpty) {
+        borderRadius = BorderRadius.zero;
+      } else if (canForwardSpanIcon && canBackwardSpanIcon) {
+        borderRadius = BorderRadius.all(Radius.circular(radiusValue));
+      } else if (canForwardSpanIcon) {
+        borderRadius = BorderRadius.only(
+          topLeft: Radius.circular(radiusValue),
+          bottomLeft: Radius.circular(radiusValue),
+        );
+      } else if (canBackwardSpanIcon) {
+        borderRadius = BorderRadius.only(
+          topRight: Radius.circular(radiusValue),
+          bottomRight: Radius.circular(radiusValue),
+        );
+      } else {
+        borderRadius = BorderRadius.all(Radius.circular(radiusValue));
+      }
+      final RRect rect = RRect.fromRectAndCorners(
+        Rect.fromLTWH(
+          widget.isRTL ? xPosition - widthToUse : xPosition,
+          yPositionToUse,
+          widthToUse,
+          heightToUse,
+        ),
+        topLeft: borderRadius.topLeft,
+        topRight: borderRadius.topRight,
+        bottomLeft: borderRadius.bottomLeft,
+        bottomRight: borderRadius.bottomRight,
+      );
       appointmentView.appointmentRect = rect;
     }
   }
@@ -1502,8 +1598,7 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
         }
 
         final RRect moreRegionRect = monthAppointmentCountViews[keys[i]]!;
-        print(
-            'ABAStudio moreRegionRect: ${moreRegionRect.left} ${moreRegionRect.top} ${moreRegionRect.right} ${moreRegionRect.bottom}');
+
         context.paintChild(child, Offset(moreRegionRect.left, moreRegionRect.top));
         _updateAppointmentHovering(moreRegionRect, context.canvas);
 
@@ -1866,7 +1961,7 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       canvas.drawRRect(appointmentRect, paint);
 
       double xPosition = appointmentRect.left;
-      double yPosition = appointmentRect.top;
+      double yPosition = appointmentRect.top - appointmentRect.height / 2;
       final bool canAddSpanIcon = AppointmentHelper.canAddSpanIcon(visibleDates, appointment, view);
       bool canAddForwardIcon = false;
       final TextStyle appointmentTextStyle =
@@ -2047,7 +2142,7 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
   }
 
   void _drawTimelineAppointments(Canvas canvas, Size size, Paint paint) {
-    const double textStartPadding = 2;
+    const double textStartPadding = 4;
     final bool useMobilePlatformUI = CalendarViewHelper.isMobileLayoutUI(size.width, isMobilePlatform);
     for (int i = 0; i < appointmentCollection.length; i++) {
       final AppointmentView appointmentView = appointmentCollection[i];
@@ -2060,28 +2155,11 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       final RRect appointmentRect = appointmentView.appointmentRect!;
       canvas.drawRRect(appointmentRect, paint);
       final bool canAddSpanIcon = AppointmentHelper.canAddSpanIcon(visibleDates, appointment, view);
-      double forwardSpanIconSize = 0;
-      double backwardSpanIconSize = 0;
-      const double iconPadding = 2;
+      const double forwardSpanIconSize = 0;
+      const double backwardSpanIconSize = 0;
+      const double iconSize = 0;
       final TextStyle appointmentTextStyle =
           AppointmentHelper.getAppointmentTextStyle(calendar.appointmentTextStyle, view, themeData);
-      final double iconSize =
-          _getTextSize(appointmentRect, appointmentTextStyle.fontSize! * textScaleFactor) + (2 * iconPadding);
-
-      if (canAddSpanIcon) {
-        final DateTime appStartTime = appointment.exactStartTime;
-        final DateTime appEndTime = appointment.exactEndTime;
-        final DateTime viewStartDate = AppointmentHelper.convertToStartTime(visibleDates[0]);
-        final DateTime viewEndDate = AppointmentHelper.convertToEndTime(visibleDates[visibleDates.length - 1]);
-        if (AppointmentHelper.canAddForwardSpanIcon(appStartTime, appEndTime, viewStartDate, viewEndDate)) {
-          forwardSpanIconSize = iconSize;
-        } else if (AppointmentHelper.canAddBackwardSpanIcon(appStartTime, appEndTime, viewStartDate, viewEndDate)) {
-          backwardSpanIconSize = iconSize;
-        } else {
-          forwardSpanIconSize = iconSize;
-          backwardSpanIconSize = iconSize;
-        }
-      }
 
       double maxWidth = appointmentRect.width - (2 * textStartPadding) - backwardSpanIconSize - forwardSpanIconSize;
       maxWidth = maxWidth > 0 ? maxWidth : 0;
@@ -2091,62 +2169,22 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       );
 
       _textPainter = _updateTextPainter(span, _textPainter, isRTL, _textScaleFactor);
-      final double totalHeight = appointmentRect.height - (2 * textStartPadding);
-      _updatePainterMaxLines(totalHeight);
-
-      /// In RTL, when the text wraps into multiple line the line width is
-      /// smaller than the expected when we use the
-      /// 'TextWidthBasis.longestLine]` which renders the subject text out of
-      /// the appointment rect, hence to overcome this we have added checked
-      /// this condition and set the text width basis.
-      if (view == CalendarView.timelineMonth) {
-        _textPainter.textWidthBasis = TextWidthBasis.parent;
-      }
-
-      //// left and right side padding value 2 subtracted in appointment width
+      _textPainter.maxLines = 1;
+      _textPainter.ellipsis = '…';
       _textPainter.layout(maxWidth: maxWidth);
-      if ((_textPainter.maxLines == null || _textPainter.maxLines == 1) && _textPainter.height > totalHeight) {
-        _updateAppointmentHovering(appointmentRect, canvas);
-        continue;
-      }
 
+      // final double totalHeight = appointmentRect.height - (2 * textStartPadding);
+      // Always draw text in a single line, vertically centered
       final double xPosition = isRTL
           ? appointmentRect.right - backwardSpanIconSize - _textPainter.width - textStartPadding
           : appointmentRect.left + backwardSpanIconSize + textStartPadding;
-      final int maxLines = (appointmentRect.height / _textPainter.preferredLineHeight).floor();
-      final bool isRecurrenceAppointment = appointment.recurrenceRule != null && appointment.recurrenceRule!.isNotEmpty;
+      final double yPosition = appointmentRect.top + (appointmentRect.height - _textPainter.height) / 2;
+      // final bool isRecurrenceAppointment = appointment.recurrenceRule != null && appointment.recurrenceRule!.isNotEmpty;
+      log('ABAStudio ');
 
-      if (maxLines == 1) {
-        _drawSingleLineAppointmentView(
-            canvas,
-            appointmentRect,
-            textStartPadding,
-            appointmentTextStyle,
-            appointmentTextStyle.fontSize!,
-            isRecurrenceAppointment,
-            isRecurrenceAppointment || appointment.recurrenceId != null ? iconSize : 0,
-            forwardSpanIconSize,
-            backwardSpanIconSize,
-            paint);
-      } else {
-        _textPainter.paint(canvas, Offset(xPosition, appointmentRect.top + textStartPadding));
+      _textPainter.paint(canvas, Offset(xPosition, yPosition));
 
-        if (forwardSpanIconSize != 0) {
-          _addForwardSpanIconForTimeline(canvas, size, appointmentRect, maxWidth, appointmentRect.tlRadius, paint,
-              isMobilePlatform, appointmentTextStyle);
-        }
-
-        if (backwardSpanIconSize != 0) {
-          _addBackwardSpanIconForTimeline(canvas, size, appointmentRect, maxWidth, appointmentRect.tlRadius, paint,
-              isMobilePlatform, appointmentTextStyle);
-        }
-
-        if (isRecurrenceAppointment || appointment.recurrenceId != null) {
-          _addRecurrenceIconForTimeline(canvas, size, appointmentRect, maxWidth, appointmentRect.tlRadius, paint,
-              useMobilePlatformUI, isRecurrenceAppointment, appointmentTextStyle);
-        }
-      }
-
+      // No multi-line or icon drawing for timeline appointments in this mode
       _updateAppointmentHovering(appointmentRect, canvas);
     }
   }
@@ -2160,7 +2198,8 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       return appointment.subject;
     }
 
-    return AppointmentHelper.getSpanAppointmentText(appointment, visibleDates[0], _localizations);
+    return appointment.subject;
+    // return AppointmentHelper.getSpanAppointmentText(appointment, visibleDates[0], _localizations);
   }
 
   double _getTextSize(RRect rect, double textSize) {

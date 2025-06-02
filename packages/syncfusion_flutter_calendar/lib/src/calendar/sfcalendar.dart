@@ -2959,7 +2959,7 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
     _isRTL = CalendarViewHelper.isRTLLayout(context);
     _themeData = Theme.of(context);
     _calendarTheme = _getThemeDataValue(SfCalendarTheme.of(context), _themeData);
-    print('ABAStudio HITLE 123 ${widget.timeRegionBuilder}');
+    print('ABAStudio ${widget.timeRegionBuilder}');
 
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       _minWidth = constraints.maxWidth == double.infinity ? _minWidth : constraints.maxWidth;

@@ -203,18 +203,16 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
 
   @override
   Widget build(BuildContext context) {
-    /// Create the widgets when appointment builder is not null.
-    if (_children.isEmpty && widget.calendar.appointmentBuilder != null) {
+    // Luôn clear _children để đảm bảo không bị lặp widget khi dữ liệu thay đổi
+    _children.clear();
+    // Nếu có appointmentBuilder thì build custom widget overlay lên đúng vùng
+    if (widget.calendar.appointmentBuilder != null) {
       final DateTime initialVisibleDate = widget.visibleDates[0];
       for (int i = 0; i < _appointmentCollection.length; i++) {
         final AppointmentView appointmentView = _appointmentCollection[i];
-
-        /// Check the appointment view have appointment, if not then the
-        /// appointment view is not valid or it will be used for reusing view.
         if (appointmentView.appointment == null || appointmentView.appointmentRect == null) {
           continue;
         }
-
         final DateTime appStartTime = DateTime(appointmentView.appointment!.actualStartTime.year,
             appointmentView.appointment!.actualStartTime.month, appointmentView.appointment!.actualStartTime.day);
         final DateTime date = appointmentView.startIndex != -1
@@ -222,76 +220,101 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
             : appStartTime.isBefore(initialVisibleDate)
                 ? initialVisibleDate
                 : appStartTime;
-
-        final Widget child = widget.calendar.appointmentBuilder!(
+        final Rect bounds = Rect.fromLTWH(
+          0, // custom widget luôn nằm trong vùng 0,0 của box overlay
+          0,
+          appointmentView.appointmentRect!.width,
+          appointmentView.appointmentRect!.height,
+        );
+        final Widget child = SizedBox(
+          width: bounds.width,
+          height: bounds.height,
+          child: widget.calendar.appointmentBuilder!(
             context,
             CalendarAppointmentDetails(
-                date,
-                List<dynamic>.unmodifiable(<dynamic>[
-                  CalendarViewHelper.getAppointmentDetail(appointmentView.appointment!, widget.calendar.dataSource)
-                ]),
-                Rect.fromLTWH(appointmentView.appointmentRect!.left, appointmentView.appointmentRect!.top,
-                    appointmentView.appointmentRect!.width, appointmentView.appointmentRect!.height)));
-
-        _children.add(RepaintBoundary(child: child));
+              date,
+              List<dynamic>.unmodifiable(<dynamic>[
+                CalendarViewHelper.getAppointmentDetail(appointmentView.appointment!, widget.calendar.dataSource)
+              ]),
+              bounds,
+            ),
+          ),
+        );
+        // Đặt widget custom đúng vị trí overlay bằng Positioned
+        _children.add(Positioned(
+          left: appointmentView.appointmentRect!.left,
+          top: appointmentView.appointmentRect!.top,
+          child: RepaintBoundary(child: child),
+        ));
       }
-
       if (_monthAppointmentCountViews.isNotEmpty) {
         final List<int> keys = _monthAppointmentCountViews.keys.toList();
-
-        /// Get the more appointment index(more appointment index map holds more
-        /// appointment needed cell index and it bound)
         for (int i = 0; i < keys.length; i++) {
           final int index = keys[i];
           final List<CalendarAppointment> moreAppointments = <CalendarAppointment>[];
           final List<AppointmentView> moreAppointmentViews = _indexAppointments[index]!;
-
-          /// Get the appointments of the more appointment cell index from more
-          /// appointment views.
           for (int j = 0; j < moreAppointmentViews.length; j++) {
             final AppointmentView currentAppointment = moreAppointmentViews[j];
             moreAppointments.add(currentAppointment.appointment!);
           }
-
           final DateTime date = widget.visibleDates[index];
           final RRect moreRegionRect = _monthAppointmentCountViews[index]!;
-          final Widget child = widget.calendar.appointmentBuilder!(
+          final Rect bounds = Rect.fromLTWH(
+            0,
+            0,
+            moreRegionRect.width,
+            moreRegionRect.height,
+          );
+          final Widget child = SizedBox(
+            width: bounds.width,
+            height: bounds.height,
+            child: widget.calendar.appointmentBuilder!(
               context,
               CalendarAppointmentDetails(
-                  date,
-                  List<dynamic>.unmodifiable(
-                      CalendarViewHelper.getCustomAppointments(moreAppointments, widget.calendar.dataSource)),
-                  Rect.fromLTWH(moreRegionRect.left, moreRegionRect.top, moreRegionRect.width, moreRegionRect.height),
-                  isMoreAppointmentRegion: true));
-
-          /// Throw exception when builder return widget is null.
-          _children.add(RepaintBoundary(child: child));
+                date,
+                List<dynamic>.unmodifiable(
+                    CalendarViewHelper.getCustomAppointments(moreAppointments, widget.calendar.dataSource)),
+                bounds,
+                isMoreAppointmentRegion: true,
+              ),
+            ),
+          );
+          _children.add(Positioned(
+            left: moreRegionRect.left,
+            top: moreRegionRect.top,
+            child: RepaintBoundary(child: child),
+          ));
         }
       }
     }
-
-    return _AppointmentRenderWidget(
-        widget.calendar,
-        widget.view,
-        widget.visibleDates,
-        widget.visibleAppointments.value,
-        widget.timeIntervalHeight,
-        widget.calendarTheme,
-        widget.themeData,
-        widget.isRTL,
-        widget.appointmentHoverPosition,
-        widget.resourceCollection,
-        widget.resourceItemHeight,
-        widget.textScaleFactor,
-        widget.isMobilePlatform,
-        widget.width,
-        widget.height,
-        widget.localizations,
-        _appointmentCollection,
-        _indexAppointments,
-        _monthAppointmentCountViews,
-        _weekNumberPanelWidth,
-        widgets: _children);
+    // Nếu không có appointmentBuilder, _children luôn rỗng, chỉ vẽ mặc định
+    return Stack(
+      children: [
+        _AppointmentRenderWidget(
+          widget.calendar,
+          widget.view,
+          widget.visibleDates,
+          widget.visibleAppointments.value,
+          widget.timeIntervalHeight,
+          widget.calendarTheme,
+          widget.themeData,
+          widget.isRTL,
+          widget.appointmentHoverPosition,
+          widget.resourceCollection,
+          widget.resourceItemHeight,
+          widget.textScaleFactor,
+          widget.isMobilePlatform,
+          widget.width,
+          widget.height,
+          widget.localizations,
+          _appointmentCollection,
+          _indexAppointments,
+          _monthAppointmentCountViews,
+          _weekNumberPanelWidth,
+        ),
+        ..._children,
+      ],
+    );
   }
 
   AppointmentView? _getAppointmentViewOnPoint(double x, double y) {
@@ -971,23 +994,23 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
         // yPositionToUse remains yPosition
       }
       BorderRadius borderRadius;
-      final double radiusValue = appointmentHeight / 2;
+      const double radiusValue = 6;
       if (appointment.subject.isEmpty) {
         borderRadius = BorderRadius.zero;
       } else if (canForwardSpanIcon && canBackwardSpanIcon) {
-        borderRadius = BorderRadius.all(Radius.circular(radiusValue));
+        borderRadius = const BorderRadius.all(Radius.circular(radiusValue));
       } else if (canForwardSpanIcon) {
-        borderRadius = BorderRadius.only(
+        borderRadius = const BorderRadius.only(
           topLeft: Radius.circular(radiusValue),
           bottomLeft: Radius.circular(radiusValue),
         );
       } else if (canBackwardSpanIcon) {
-        borderRadius = BorderRadius.only(
+        borderRadius = const BorderRadius.only(
           topRight: Radius.circular(radiusValue),
           bottomRight: Radius.circular(radiusValue),
         );
       } else {
-        borderRadius = BorderRadius.all(Radius.circular(radiusValue));
+        borderRadius = const BorderRadius.all(Radius.circular(radiusValue));
       }
       final RRect rect = RRect.fromRectAndCorners(
         Rect.fromLTWH(
@@ -1570,40 +1593,32 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
 
   @override
   void paint(PaintingContext context, Offset offset) {
+    // Luôn vẽ mặc định trước
+    _drawCustomAppointmentView(context.canvas);
+    // Nếu có custom widget, vẽ overlay lên trên
     RenderBox? child = firstChild;
-    final bool isNeedDefaultPaint = childCount == 0;
-    if (isNeedDefaultPaint) {
-      _drawCustomAppointmentView(context.canvas);
-    } else {
-      for (int i = 0; i < appointmentCollection.length; i++) {
-        final AppointmentView appointmentView = appointmentCollection[i];
-        if (appointmentView.appointment == null || child == null || appointmentView.appointmentRect == null) {
-          continue;
-        }
-        context.paintChild(child, Offset(appointmentView.appointmentRect!.left, appointmentView.appointmentRect!.top));
-        _updateAppointmentHovering(appointmentView.appointmentRect!, context.canvas);
-
-        child = childAfter(child);
+    for (int i = 0; i < appointmentCollection.length; i++) {
+      final AppointmentView appointmentView = appointmentCollection[i];
+      if (appointmentView.appointment == null || child == null || appointmentView.appointmentRect == null) {
+        continue;
       }
-
-      if (view != CalendarView.month ||
-          calendar.monthViewSettings.appointmentDisplayMode != MonthAppointmentDisplayMode.appointment) {
-        return;
+      context.paintChild(child, Offset(appointmentView.appointmentRect!.left, appointmentView.appointmentRect!.top));
+      _updateAppointmentHovering(appointmentView.appointmentRect!, context.canvas);
+      child = childAfter(child);
+    }
+    if (view != CalendarView.month ||
+        calendar.monthViewSettings.appointmentDisplayMode != MonthAppointmentDisplayMode.appointment) {
+      return;
+    }
+    final List<int> keys = monthAppointmentCountViews.keys.toList();
+    for (int i = 0; i < keys.length; i++) {
+      if (child == null) {
+        continue;
       }
-
-      final List<int> keys = monthAppointmentCountViews.keys.toList();
-      for (int i = 0; i < keys.length; i++) {
-        if (child == null) {
-          continue;
-        }
-
-        final RRect moreRegionRect = monthAppointmentCountViews[keys[i]]!;
-
-        context.paintChild(child, Offset(moreRegionRect.left, moreRegionRect.top));
-        _updateAppointmentHovering(moreRegionRect, context.canvas);
-
-        child = childAfter(child);
-      }
+      final RRect moreRegionRect = monthAppointmentCountViews[keys[i]]!;
+      context.paintChild(child, Offset(moreRegionRect.left, moreRegionRect.top));
+      _updateAppointmentHovering(moreRegionRect, context.canvas);
+      child = childAfter(child);
     }
   }
 
@@ -2167,22 +2182,21 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
         text: _getTimelineAppointmentText(appointment, canAddSpanIcon),
         style: appointmentTextStyle,
       );
+      if (appointmentView.appointmentRect == null) {
+        _textPainter = _updateTextPainter(span, _textPainter, isRTL, _textScaleFactor);
+        _textPainter.maxLines = 1;
+        _textPainter.ellipsis = '…';
+        _textPainter.layout(maxWidth: maxWidth);
 
-      _textPainter = _updateTextPainter(span, _textPainter, isRTL, _textScaleFactor);
-      _textPainter.maxLines = 1;
-      _textPainter.ellipsis = '…';
-      _textPainter.layout(maxWidth: maxWidth);
+        // final double totalHeight = appointmentRect.height - (2 * textStartPadding);
+        // Always draw text in a single line, vertically centered
+        final double xPosition = isRTL
+            ? appointmentRect.right - backwardSpanIconSize - _textPainter.width - textStartPadding
+            : appointmentRect.left + backwardSpanIconSize + textStartPadding;
+        final double yPosition = appointmentRect.top + (appointmentRect.height - _textPainter.height) / 2;
 
-      // final double totalHeight = appointmentRect.height - (2 * textStartPadding);
-      // Always draw text in a single line, vertically centered
-      final double xPosition = isRTL
-          ? appointmentRect.right - backwardSpanIconSize - _textPainter.width - textStartPadding
-          : appointmentRect.left + backwardSpanIconSize + textStartPadding;
-      final double yPosition = appointmentRect.top + (appointmentRect.height - _textPainter.height) / 2;
-      // final bool isRecurrenceAppointment = appointment.recurrenceRule != null && appointment.recurrenceRule!.isNotEmpty;
-      log('ABAStudio ');
-
-      _textPainter.paint(canvas, Offset(xPosition, yPosition));
+        _textPainter.paint(canvas, Offset(xPosition, yPosition));
+      }
 
       // No multi-line or icon drawing for timeline appointments in this mode
       _updateAppointmentHovering(appointmentRect, canvas);

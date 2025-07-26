@@ -45,8 +45,8 @@ class CustomScrollViewerLayout extends MultiChildRenderObjectWidget {
   ///  }
   ///
   /// ```
-  const CustomScrollViewerLayout(List<Widget> children,
-      this._navigationDirection, this._position, this._currentChildIndex,
+  const CustomScrollViewerLayout(
+      List<Widget> children, this._navigationDirection, this._position, this._currentChildIndex,
       {super.key})
       : super(children: children);
   final CustomScrollDirection _navigationDirection;
@@ -55,13 +55,11 @@ class CustomScrollViewerLayout extends MultiChildRenderObjectWidget {
 
   @override
   _CustomScrollViewLayout createRenderObject(BuildContext context) {
-    return _CustomScrollViewLayout(
-        _navigationDirection, _position, _currentChildIndex);
+    return _CustomScrollViewLayout(_navigationDirection, _position, _currentChildIndex);
   }
 
   @override
-  void updateRenderObject(
-      BuildContext context, _CustomScrollViewLayout renderObject) {
+  void updateRenderObject(BuildContext context, _CustomScrollViewLayout renderObject) {
     renderObject
       ..position = _position
       ..navigationDirection = _navigationDirection
@@ -70,8 +68,7 @@ class CustomScrollViewerLayout extends MultiChildRenderObjectWidget {
 }
 
 class _CustomScrollViewLayout extends RenderWrap {
-  _CustomScrollViewLayout(
-      this._navigationDirection, this._position, this._currentChildIndex);
+  _CustomScrollViewLayout(this._navigationDirection, this._position, this._currentChildIndex);
 
   CustomScrollDirection _navigationDirection;
 
@@ -127,9 +124,7 @@ class _CustomScrollViewLayout extends RenderWrap {
         firstChildYPos = 0,
         lastChildYPos = 0;
     //// Below mentioned temporary variables used to restrict the parent data manipulation on [_updateChild] method.
-    WrapParentData currentChildParentData,
-        firstChildParentData,
-        lastChildParentData;
+    WrapParentData currentChildParentData, firstChildParentData, lastChildParentData;
 
     double width = constraints.maxWidth;
     double height = constraints.maxHeight;

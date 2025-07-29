@@ -45,6 +45,17 @@ enum CalendarView {
   /// For more about time slot views [refer here](https://help.syncfusion.com/flutter/calendar/timeslot-views)
   timelineMonth,
 
+  /// CalendarView.timelineCustomMonth, refers to the custom timeline month view in
+  /// [SfCalendar].
+  ///
+  /// In timeline custom month view, 30 days are rendered as columns along
+  /// a horizontal axis with each column representing a day, starting from 2 days before current date.
+
+  /// See also:
+  /// [TimeSlotViewSettings]
+  /// For more about time slot views [refer here](https://help.syncfusion.com/flutter/calendar/timeslot-views)
+  timelineCustomMonth,
+
   /// - CalendarView.schedule, displays the schedule view.
   schedule
 }

@@ -489,6 +489,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
         }
         break;
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           // _updateTimelineMonthAppointmentDetails(visibleAppointments);
           _updateTimelineAppointmentDetails(visibleAppointments);
@@ -1034,7 +1035,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
       return settings.timelineAppointmentHeight;
     }
 
-    if (view == CalendarView.timelineMonth) {
+    if (view == CalendarView.timelineMonth || view == CalendarView.timelineCustomMonth) {
       return 25;
     }
 
@@ -1642,6 +1643,7 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           _drawTimelineAppointments(canvas, size, _appointmentPainter);
         }

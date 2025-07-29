@@ -437,6 +437,7 @@ class CalendarViewHelper {
       case CalendarView.schedule:
       case CalendarView.month:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return 30;
     }
   }
@@ -458,6 +459,7 @@ class CalendarViewHelper {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return 30;
       case CalendarView.schedule:
         return 0;
@@ -578,6 +580,7 @@ class CalendarViewHelper {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return true;
       case CalendarView.day:
       case CalendarView.week:

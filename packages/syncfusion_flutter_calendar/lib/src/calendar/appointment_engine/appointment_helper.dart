@@ -47,12 +47,9 @@ class AppointmentHelper {
   }
 
   /// Return the date time value by adding the days in date.
-  static DateTime addDaysWithTime(
-      DateTime date, int days, int hour, int minute, int second) {
-    final DateTime newDate =
-        DateTimeHelper.getDateTimeValue(addDays(date, days));
-    return DateTime(
-        newDate.year, newDate.month, newDate.day, hour, minute, second);
+  static DateTime addDaysWithTime(DateTime date, int days, int hour, int minute, int second) {
+    final DateTime newDate = DateTimeHelper.getDateTimeValue(addDays(date, days));
+    return DateTime(newDate.year, newDate.month, newDate.day, hour, minute, second);
   }
 
   /// Check whether the data source has calendar appointment type or not.
@@ -68,30 +65,21 @@ class AppointmentHelper {
 
   static bool _isSpanned(CalendarAppointment appointment) {
     return !(appointment.actualEndTime.day == appointment.actualStartTime.day &&
-            appointment.actualEndTime.month ==
-                appointment.actualStartTime.month &&
-            appointment.actualEndTime.year ==
-                appointment.actualStartTime.year) &&
-        getDifference(appointment.actualStartTime, appointment.actualEndTime)
-                .inDays >
-            0;
+            appointment.actualEndTime.month == appointment.actualStartTime.month &&
+            appointment.actualEndTime.year == appointment.actualStartTime.year) &&
+        getDifference(appointment.actualStartTime, appointment.actualEndTime).inDays > 0;
   }
 
   /// Check and returns whether the span icon can be added for the spanning
   /// appointment.
-  static bool canAddSpanIcon(List<DateTime> visibleDates,
-      CalendarAppointment appointment, CalendarView view,
-      {DateTime? visibleStartDate,
-      DateTime? visibleEndDate,
-      bool? showTrailingLeadingDates}) {
+  static bool canAddSpanIcon(List<DateTime> visibleDates, CalendarAppointment appointment, CalendarView view,
+      {DateTime? visibleStartDate, DateTime? visibleEndDate, bool? showTrailingLeadingDates}) {
     final DateTime viewStartDate = convertToStartTime(visibleDates[0]);
-    final DateTime viewEndDate =
-        convertToEndTime(visibleDates[visibleDates.length - 1]);
+    final DateTime viewEndDate = convertToEndTime(visibleDates[visibleDates.length - 1]);
     final DateTime appStartTime = appointment.exactStartTime;
     final DateTime appEndTime = appointment.exactEndTime;
 
-    if (appStartTime.isBefore(viewStartDate) ||
-        appEndTime.isAfter(viewEndDate)) {
+    if (appStartTime.isBefore(viewStartDate) || appEndTime.isAfter(viewEndDate)) {
       return true;
     }
 
@@ -100,6 +88,7 @@ class AppointmentHelper {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
       case CalendarView.schedule:
         break;
       case CalendarView.day:
@@ -114,18 +103,13 @@ class AppointmentHelper {
         {
           if (showTrailingLeadingDates != null &&
               !showTrailingLeadingDates &&
-              (appStartTime.isBefore(visibleStartDate!) ||
-                  appEndTime.isAfter(visibleEndDate!))) {
+              (appStartTime.isBefore(visibleStartDate!) || appEndTime.isAfter(visibleEndDate!))) {
             return true;
           }
 
           if (appStartTime.isAfter(viewStartDate)) {
-            final int appointmentStartWeek =
-                getDifference(viewStartDate, appStartTime).inDays ~/
-                    DateTime.daysPerWeek;
-            final int appointmentEndWeek =
-                getDifference(viewStartDate, appEndTime).inDays ~/
-                    DateTime.daysPerWeek;
+            final int appointmentStartWeek = getDifference(viewStartDate, appStartTime).inDays ~/ DateTime.daysPerWeek;
+            final int appointmentEndWeek = getDifference(viewStartDate, appEndTime).inDays ~/ DateTime.daysPerWeek;
             return appointmentStartWeek != appointmentEndWeek;
           }
         }
@@ -135,10 +119,8 @@ class AppointmentHelper {
   }
 
   /// Returns recurrence icon details for appointment view.
-  static TextSpan getRecurrenceIcon(
-      Color color, double textSize, bool isRecurrenceAppointment) {
-    final IconData recurrenceIconData =
-        isRecurrenceAppointment ? Icons.autorenew : Icons.sync_disabled;
+  static TextSpan getRecurrenceIcon(Color color, double textSize, bool isRecurrenceAppointment) {
+    final IconData recurrenceIconData = isRecurrenceAppointment ? Icons.autorenew : Icons.sync_disabled;
     return TextSpan(
         text: String.fromCharCode(recurrenceIconData.codePoint),
         style: TextStyle(
@@ -150,37 +132,25 @@ class AppointmentHelper {
 
   /// Calculate and returns the centered y position for the span icon in the
   /// spanning appointment UI.
-  static double getYPositionForSpanIcon(
-      TextSpan icon, TextPainter textPainter, RRect rect) {
+  static double getYPositionForSpanIcon(TextSpan icon, TextPainter textPainter, RRect rect) {
     /// There is a space around the font, hence to get the start position we
     /// must calculate the icon start position, apart from the space, and the
     /// value 1.5 used since the space on top and bottom of icon is not even,
     /// hence to rectify this tha value 1.5 used, and tested with multiple
     /// device.
-    final int iconStartPosition = (textPainter.height -
-            (textPainter.textScaler.scale(icon.style!.fontSize!))) ~/
-        1.5;
-    return rect.top -
-        ((textPainter.height - rect.height) / 2) -
-        iconStartPosition;
+    final int iconStartPosition = (textPainter.height - (textPainter.textScaler.scale(icon.style!.fontSize!))) ~/ 1.5;
+    return rect.top - ((textPainter.height - rect.height) / 2) - iconStartPosition;
   }
 
   /// Returns the appointment text which will be displayed on spanning
   /// appointments on day, timeline day, schedule and month agenda view.
   /// The text will display the current date, and total dates of the spanning
   /// appointment
-  static String getSpanAppointmentText(CalendarAppointment appointment,
-      DateTime date, SfLocalizations localization) {
-    final DateTime exactStartTime =
-        convertToStartTime(appointment.exactStartTime);
-    final String totalDays = (getDifference(
-                    exactStartTime, convertToEndTime(appointment.exactEndTime))
-                .inDays +
-            1)
-        .toString();
-    final String currentDate =
-        (getDifference(exactStartTime, convertToEndTime(date)).inDays + 1)
-            .toString();
+  static String getSpanAppointmentText(CalendarAppointment appointment, DateTime date, SfLocalizations localization) {
+    final DateTime exactStartTime = convertToStartTime(appointment.exactStartTime);
+    final String totalDays =
+        (getDifference(exactStartTime, convertToEndTime(appointment.exactEndTime)).inDays + 1).toString();
+    final String currentDate = (getDifference(exactStartTime, convertToEndTime(date)).inDays + 1).toString();
 
     return '${appointment.subject} (${localization.daySpanCountLabel} $currentDate / $totalDays)';
   }
@@ -200,26 +170,23 @@ class AppointmentHelper {
 
   /// Check and returns whether the forward icon can be added for the spanning
   /// appointment.
-  static bool canAddForwardSpanIcon(DateTime appStartTime, DateTime appEndTime,
-      DateTime viewStartDate, DateTime viewEndDate) {
-    return isSameOrAfterDate(viewStartDate, appStartTime) &&
-        appEndTime.isAfter(viewEndDate);
+  static bool canAddForwardSpanIcon(
+      DateTime appStartTime, DateTime appEndTime, DateTime viewStartDate, DateTime viewEndDate) {
+    return isSameOrAfterDate(viewStartDate, appStartTime) && appEndTime.isAfter(viewEndDate);
   }
 
   /// Check and returns whether the backward icon can be added for the spanning
   /// appointment.
-  static bool canAddBackwardSpanIcon(DateTime appStartTime, DateTime appEndTime,
-      DateTime viewStartDate, DateTime viewEndDate) {
-    return appStartTime.isBefore(viewStartDate) &&
-        isSameOrBeforeDate(viewEndDate, appEndTime);
+  static bool canAddBackwardSpanIcon(
+      DateTime appStartTime, DateTime appEndTime, DateTime viewStartDate, DateTime viewEndDate) {
+    return appStartTime.isBefore(viewStartDate) && isSameOrBeforeDate(viewEndDate, appEndTime);
   }
 
   /// Returns the specific date appointment collection by filtering the
   /// appointments from passed visible appointment collection.
   static List<CalendarAppointment> getSpecificDateVisibleAppointment(
       DateTime? date, List<CalendarAppointment>? visibleAppointments) {
-    final List<CalendarAppointment> appointmentCollection =
-        <CalendarAppointment>[];
+    final List<CalendarAppointment> appointmentCollection = <CalendarAppointment>[];
     if (date == null || visibleAppointments == null) {
       return appointmentCollection;
     }
@@ -229,8 +196,7 @@ class AppointmentHelper {
 
     for (int j = 0; j < visibleAppointments.length; j++) {
       final CalendarAppointment appointment = visibleAppointments[j];
-      if (isAppointmentWithinVisibleDateRange(
-          appointment, startDate, endDate)) {
+      if (isAppointmentWithinVisibleDateRange(appointment, startDate, endDate)) {
         appointmentCollection.add(appointment);
       }
     }
@@ -240,11 +206,8 @@ class AppointmentHelper {
 
   /// Return appointment collection based on the date.
   static List<CalendarAppointment> getSelectedDateAppointments(
-      List<CalendarAppointment>? appointments,
-      String? timeZone,
-      DateTime? date) {
-    final List<CalendarAppointment> appointmentCollection =
-        <CalendarAppointment>[];
+      List<CalendarAppointment>? appointments, String? timeZone, DateTime? date) {
+    final List<CalendarAppointment> appointmentCollection = <CalendarAppointment>[];
     if (appointments == null || appointments.isEmpty || date == null) {
       return appointmentCollection;
     }
@@ -255,39 +218,34 @@ class AppointmentHelper {
 
     for (int j = 0; j < count; j++) {
       final CalendarAppointment appointment = appointments[j];
-      appointment.actualStartTime = convertTimeToAppointmentTimeZone(
-          appointment.startTime, appointment.startTimeZone, timeZone);
-      appointment.actualEndTime = convertTimeToAppointmentTimeZone(
-          appointment.endTime, appointment.endTimeZone, timeZone);
+      appointment.actualStartTime =
+          convertTimeToAppointmentTimeZone(appointment.startTime, appointment.startTimeZone, timeZone);
+      appointment.actualEndTime =
+          convertTimeToAppointmentTimeZone(appointment.endTime, appointment.endTimeZone, timeZone);
       appointment.exactStartTime = appointment.actualStartTime;
       appointment.exactEndTime = appointment.actualEndTime;
 
-      if (appointment.recurrenceRule == null ||
-          appointment.recurrenceRule == '') {
-        if (isAppointmentWithinVisibleDateRange(
-            appointment, startDate, endDate)) {
+      if (appointment.recurrenceRule == null || appointment.recurrenceRule == '') {
+        if (isAppointmentWithinVisibleDateRange(appointment, startDate, endDate)) {
           appointmentCollection.add(appointment);
         }
 
         continue;
       }
 
-      _getRecurrenceAppointments(
-          appointment, appointmentCollection, startDate, endDate, timeZone);
+      _getRecurrenceAppointments(appointment, appointmentCollection, startDate, endDate, timeZone);
     }
 
     return appointmentCollection;
   }
 
   /// Return calendar appointment text style.
-  static TextStyle getAppointmentTextStyle(
-      TextStyle appointmentTextStyle, CalendarView view, ThemeData themeData) {
+  static TextStyle getAppointmentTextStyle(TextStyle appointmentTextStyle, CalendarView view, ThemeData themeData) {
     if (appointmentTextStyle.fontSize != -1) {
       return themeData.textTheme.bodyMedium!.merge(appointmentTextStyle);
     }
 
-    return themeData.textTheme.bodyMedium!
-        .merge(appointmentTextStyle.copyWith(fontSize: 12));
+    return themeData.textTheme.bodyMedium!.merge(appointmentTextStyle.copyWith(fontSize: 12));
   }
 
   static CalendarAppointment _copy(CalendarAppointment appointment) {
@@ -317,16 +275,14 @@ class AppointmentHelper {
 
   /// Check the appointment in between the visible date range.
   static bool isAppointmentWithinVisibleDateRange(
-      CalendarAppointment appointment,
-      DateTime visibleStart,
-      DateTime visibleEnd) {
-    return isDateRangeWithinVisibleDateRange(appointment.actualStartTime,
-        appointment.actualEndTime, visibleStart, visibleEnd);
+      CalendarAppointment appointment, DateTime visibleStart, DateTime visibleEnd) {
+    return isDateRangeWithinVisibleDateRange(
+        appointment.actualStartTime, appointment.actualEndTime, visibleStart, visibleEnd);
   }
 
   /// Check the date range in between the visible date range.
-  static bool isDateRangeWithinVisibleDateRange(DateTime startDate,
-      DateTime endDate, DateTime visibleStart, DateTime visibleEnd) {
+  static bool isDateRangeWithinVisibleDateRange(
+      DateTime startDate, DateTime endDate, DateTime visibleStart, DateTime visibleEnd) {
     if (startDate.isAfter(visibleStart)) {
       if (startDate.isBefore(visibleEnd)) {
         return true;
@@ -342,8 +298,8 @@ class AppointmentHelper {
     return false;
   }
 
-  static bool _isAppointmentInVisibleDateRange(CalendarAppointment appointment,
-      DateTime visibleStart, DateTime visibleEnd) {
+  static bool _isAppointmentInVisibleDateRange(
+      CalendarAppointment appointment, DateTime visibleStart, DateTime visibleEnd) {
     final DateTime appStartTime = appointment.actualStartTime;
     final DateTime appEndTime = appointment.actualEndTime;
     if ((appStartTime.isAfter(visibleStart) ||
@@ -394,8 +350,7 @@ class AppointmentHelper {
     olsonWindowsTimes['Arab Standard Time'] = 'Asia/Riyadh';
     olsonWindowsTimes['Arabian Standard Time'] = 'Indian/Reunion';
     olsonWindowsTimes['Arabic Standard Time'] = 'Asia/Baghdad';
-    olsonWindowsTimes['Argentina Standard Time'] =
-        'America/Argentina/Buenos_Aires';
+    olsonWindowsTimes['Argentina Standard Time'] = 'America/Argentina/Buenos_Aires';
     olsonWindowsTimes['Atlantic Standard Time'] = 'America/Halifax';
     olsonWindowsTimes['Azerbaijan Standard Time'] = 'Asia/Baku';
     olsonWindowsTimes['Azores Standard Time'] = 'Atlantic/Azores';
@@ -454,8 +409,7 @@ class AppointmentHelper {
     olsonWindowsTimes['North Asia Standard Time'] = 'Asia/Krasnoyarsk';
     olsonWindowsTimes['Pacific SA Standard Time'] = 'America/Santiago';
     olsonWindowsTimes['Pacific Standard Time'] = 'America/Los_Angeles';
-    olsonWindowsTimes['Pacific Standard Time (Mexico)'] =
-        'America/Santa_Isabel';
+    olsonWindowsTimes['Pacific Standard Time (Mexico)'] = 'America/Santa_Isabel';
     olsonWindowsTimes['Pakistan Standard Time'] = 'Asia/Karachi';
     olsonWindowsTimes['Paraguay Standard Time'] = 'America/Asuncion';
     olsonWindowsTimes['Romance Standard Time'] = 'Europe/Paris';
@@ -477,8 +431,7 @@ class AppointmentHelper {
     olsonWindowsTimes['Tokyo Standard Time'] = 'Asia/Tokyo';
     olsonWindowsTimes['Tonga Standard Time'] = 'Pacific/Tongatapu';
     olsonWindowsTimes['Turkey Standard Time'] = 'Europe/Istanbul';
-    olsonWindowsTimes['US Eastern Standard Time'] =
-        'America/Indiana/Indianapolis';
+    olsonWindowsTimes['US Eastern Standard Time'] = 'America/Indiana/Indianapolis';
     olsonWindowsTimes['US Mountain Standard Time'] = 'America/Phoenix';
     olsonWindowsTimes['UTC'] = 'America/Danmarkshavn';
     olsonWindowsTimes['UTC+12'] = 'Pacific/Tarawa';
@@ -508,25 +461,18 @@ class AppointmentHelper {
     final DateTime actualConvertedDate;
 
     if (targetTimezone == 'Dateline Standard Time') {
-      actualConvertedDate =
-          convertedDate.toUtc().subtract(const Duration(hours: 12));
+      actualConvertedDate = convertedDate.toUtc().subtract(const Duration(hours: 12));
     } else {
       final Location location = _timeZoneInfoToOlsonTimeZone(targetTimezone!);
       actualConvertedDate = TZDateTime.from(convertedDate, location);
     }
 
-    return DateTime(
-        actualConvertedDate.year,
-        actualConvertedDate.month,
-        actualConvertedDate.day,
-        actualConvertedDate.hour,
-        actualConvertedDate.minute,
-        actualConvertedDate.second);
+    return DateTime(actualConvertedDate.year, actualConvertedDate.month, actualConvertedDate.day,
+        actualConvertedDate.hour, actualConvertedDate.minute, actualConvertedDate.second);
   }
 
   /// Resets the appointment views used on appointment layout rendering.
-  static void resetAppointmentView(
-      List<AppointmentView> appointmentCollection) {
+  static void resetAppointmentView(List<AppointmentView> appointmentCollection) {
     for (int i = 0; i < appointmentCollection.length; i++) {
       final AppointmentView obj = appointmentCollection[i];
       obj.canReuse = true;
@@ -540,28 +486,24 @@ class AppointmentHelper {
   }
 
   /// Returns the position from time passed, based on the time interval height.
-  static double timeToPosition(
-      SfCalendar calendar, DateTime date, double timeIntervalHeight) {
-    final double singleIntervalHeightForAnHour = (60 /
-            CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings)) *
-        timeIntervalHeight;
+  static double timeToPosition(SfCalendar calendar, DateTime date, double timeIntervalHeight) {
+    final double singleIntervalHeightForAnHour =
+        (60 / CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings)) * timeIntervalHeight;
 
     final double startHour = calendar.timeSlotViewSettings.startHour;
-    return ((date.hour + (date.minute / 60) + (date.second / 3600)) *
-            singleIntervalHeightForAnHour) -
+    return ((date.hour + (date.minute / 60) + (date.second / 3600)) * singleIntervalHeightForAnHour) -
         (startHour * singleIntervalHeightForAnHour);
   }
 
   /// Returns the appointment height from the duration passed.
-  static double getAppointmentHeightFromDuration(Duration? minimumDuration,
-      SfCalendar calendar, double timeIntervalHeight) {
+  static double getAppointmentHeightFromDuration(
+      Duration? minimumDuration, SfCalendar calendar, double timeIntervalHeight) {
     if (minimumDuration == null || minimumDuration.inMinutes <= 0) {
       return 0;
     }
 
-    final double hourHeight = (60 /
-            CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings)) *
-        timeIntervalHeight;
+    final double hourHeight =
+        (60 / CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings)) * timeIntervalHeight;
     return minimumDuration.inMinutes * (hourHeight / 60);
   }
 
@@ -581,32 +523,21 @@ class AppointmentHelper {
     final DateTime appointmentStartTime = appointment.actualStartTime;
     DateTime appointmentEndTime = appointment.actualEndTime;
     final bool isTimelineMonth = view == CalendarView.timelineMonth;
-    int minimumAppointmentMinutes =
-        calendar.timeSlotViewSettings.minimumAppointmentDuration != null
-            ? calendar
-                .timeSlotViewSettings.minimumAppointmentDuration!.inMinutes
-            : 0;
-    minimumAppointmentMinutes = minimumAppointmentMinutes > timeIntervalMinutes
-        ? timeIntervalMinutes
-        : minimumAppointmentMinutes;
+    int minimumAppointmentMinutes = calendar.timeSlotViewSettings.minimumAppointmentDuration != null
+        ? calendar.timeSlotViewSettings.minimumAppointmentDuration!.inMinutes
+        : 0;
+    minimumAppointmentMinutes =
+        minimumAppointmentMinutes > timeIntervalMinutes ? timeIntervalMinutes : minimumAppointmentMinutes;
     if (minimumAppointmentMinutes > 0 && !isTimelineMonth) {
-      final int timeIntervalMinutes =
-          calendar.timeSlotViewSettings.timeInterval.inMinutes;
+      final int timeIntervalMinutes = calendar.timeSlotViewSettings.timeInterval.inMinutes;
       minimumAppointmentMinutes =
-          minimumAppointmentMinutes > timeIntervalMinutes
-              ? timeIntervalMinutes
-              : minimumAppointmentMinutes;
-      if (getDifference(currentAppointmentStartTime, currentAppointmentEndTime)
-              .inMinutes <
-          minimumAppointmentMinutes) {
-        currentAppointmentEndTime = currentAppointmentStartTime
-            .add(Duration(minutes: minimumAppointmentMinutes));
+          minimumAppointmentMinutes > timeIntervalMinutes ? timeIntervalMinutes : minimumAppointmentMinutes;
+      if (getDifference(currentAppointmentStartTime, currentAppointmentEndTime).inMinutes < minimumAppointmentMinutes) {
+        currentAppointmentEndTime = currentAppointmentStartTime.add(Duration(minutes: minimumAppointmentMinutes));
       }
 
-      if (getDifference(appointmentStartTime, appointmentEndTime).inMinutes <
-          minimumAppointmentMinutes) {
-        appointmentEndTime = appointmentStartTime
-            .add(Duration(minutes: minimumAppointmentMinutes));
+      if (getDifference(appointmentStartTime, appointmentEndTime).inMinutes < minimumAppointmentMinutes) {
+        appointmentEndTime = appointmentStartTime.add(Duration(minutes: minimumAppointmentMinutes));
       }
     }
 
@@ -629,24 +560,20 @@ class AppointmentHelper {
     /// calculated based on the date instead of the time, hence added this
     /// condition and returned that it's a intercept appointment or not.
     if (isTimelineMonth) {
-      return isSameDate(
-              currentApp.actualStartTime, appointment.actualStartTime) ||
+      return isSameDate(currentApp.actualStartTime, appointment.actualStartTime) ||
           isSameDate(currentApp.actualStartTime, appointment.actualEndTime) ||
           isSameDate(currentApp.actualEndTime, appointment.actualStartTime);
     }
 
-    if (CalendarViewHelper.isSameTimeSlot(
-            currentAppointmentStartTime, appointmentStartTime) ||
-        CalendarViewHelper.isSameTimeSlot(
-            currentAppointmentEndTime, appointmentEndTime)) {
+    if (CalendarViewHelper.isSameTimeSlot(currentAppointmentStartTime, appointmentStartTime) ||
+        CalendarViewHelper.isSameTimeSlot(currentAppointmentEndTime, appointmentEndTime)) {
       return true;
     }
 
     return false;
   }
 
-  static bool _iterateAppointment(
-      CalendarAppointment app, bool isTimeline, bool isAllDay) {
+  static bool _iterateAppointment(CalendarAppointment app, bool isTimeline, bool isAllDay) {
     if (isAllDay) {
       if (!isTimeline && app.isAllDay) {
         app.actualEndTime = convertToEndTime(app.actualEndTime);
@@ -700,8 +627,8 @@ class AppointmentHelper {
     return boolValue1.compareTo(boolValue2);
   }
 
-  static AppointmentView _getAppointmentView(CalendarAppointment appointment,
-      List<AppointmentView> appointmentCollection, int? resourceIndex) {
+  static AppointmentView _getAppointmentView(
+      CalendarAppointment appointment, List<AppointmentView> appointmentCollection, int? resourceIndex) {
     AppointmentView? appointmentRenderer;
     for (int i = 0; i < appointmentCollection.length; i++) {
       final AppointmentView view = appointmentCollection[i];
@@ -727,57 +654,42 @@ class AppointmentHelper {
 
   /// Update the appointment view collection position and its max position
   /// details.
-  static void setAppointmentPositionAndMaxPosition(
-      List<AppointmentView> appointmentCollection,
-      SfCalendar calendar,
-      CalendarView view,
-      List<CalendarAppointment> visibleAppointments,
-      bool isAllDay,
+  static void setAppointmentPositionAndMaxPosition(List<AppointmentView> appointmentCollection, SfCalendar calendar,
+      CalendarView view, List<CalendarAppointment> visibleAppointments, bool isAllDay,
       [int? resourceIndex]) {
     final bool isTimeline = CalendarViewHelper.isTimelineView(view);
-    final List<CalendarAppointment> normalAppointments = visibleAppointments
-        .where((CalendarAppointment app) =>
-            _iterateAppointment(app, isTimeline, isAllDay))
-        .toList();
+    final List<CalendarAppointment> normalAppointments =
+        visibleAppointments.where((CalendarAppointment app) => _iterateAppointment(app, isTimeline, isAllDay)).toList();
     normalAppointments.sort(
-        (CalendarAppointment app1, CalendarAppointment app2) =>
-            app1.actualStartTime.compareTo(app2.actualStartTime));
+        (CalendarAppointment app1, CalendarAppointment app2) => app1.actualStartTime.compareTo(app2.actualStartTime));
     if (!isTimeline) {
-      normalAppointments.sort(
-          (CalendarAppointment app1, CalendarAppointment app2) =>
-              _orderAppointmentsDescending(app1.isSpanned, app2.isSpanned));
-      normalAppointments.sort(
-          (CalendarAppointment app1, CalendarAppointment app2) =>
-              _orderAppointmentsDescending(app1.isAllDay, app2.isAllDay));
+      normalAppointments.sort((CalendarAppointment app1, CalendarAppointment app2) =>
+          _orderAppointmentsDescending(app1.isSpanned, app2.isSpanned));
+      normalAppointments.sort((CalendarAppointment app1, CalendarAppointment app2) =>
+          _orderAppointmentsDescending(app1.isAllDay, app2.isAllDay));
     } else {
-      normalAppointments.sort(
-          (CalendarAppointment app1, CalendarAppointment app2) =>
-              orderAppointmentsAscending(app1.isAllDay, app2.isAllDay));
-      normalAppointments.sort(
-          (CalendarAppointment app1, CalendarAppointment app2) =>
-              orderAppointmentsAscending(app1.isSpanned, app2.isSpanned));
+      normalAppointments.sort((CalendarAppointment app1, CalendarAppointment app2) =>
+          orderAppointmentsAscending(app1.isAllDay, app2.isAllDay));
+      normalAppointments.sort((CalendarAppointment app1, CalendarAppointment app2) =>
+          orderAppointmentsAscending(app1.isSpanned, app2.isSpanned));
     }
 
     final Map<int, List<AppointmentView>> dict = <int, List<AppointmentView>>{};
     final List<AppointmentView> processedViews = <AppointmentView>[];
     int maxColsCount = 1;
 
-    final int timeIntervalMinutes =
-        CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings);
+    final int timeIntervalMinutes = CalendarViewHelper.getTimeInterval(calendar.timeSlotViewSettings);
     for (int count = 0; count < normalAppointments.length; count++) {
       final CalendarAppointment currentAppointment = normalAppointments[count];
-      if ((view == CalendarView.workWeek ||
-              view == CalendarView.timelineWorkWeek) &&
-          calendar.timeSlotViewSettings.nonWorkingDays
-              .contains(currentAppointment.actualStartTime.weekday) &&
-          calendar.timeSlotViewSettings.nonWorkingDays
-              .contains(currentAppointment.actualEndTime.weekday)) {
+      if ((view == CalendarView.workWeek || view == CalendarView.timelineWorkWeek) &&
+          calendar.timeSlotViewSettings.nonWorkingDays.contains(currentAppointment.actualStartTime.weekday) &&
+          calendar.timeSlotViewSettings.nonWorkingDays.contains(currentAppointment.actualEndTime.weekday)) {
         continue;
       }
 
       List<AppointmentView>? intersectingApps;
-      final AppointmentView currentAppView = _getAppointmentView(
-          currentAppointment, appointmentCollection, resourceIndex);
+      final AppointmentView currentAppView =
+          _getAppointmentView(currentAppointment, appointmentCollection, resourceIndex);
 
       for (int position = 0; position < maxColsCount; position++) {
         bool isIntersecting = false;
@@ -788,12 +700,7 @@ class AppointmentHelper {
           }
 
           if (_isIntersectingAppointmentInDayView(
-              calendar,
-              view,
-              currentAppointment,
-              previousApp,
-              previousApp.appointment!,
-              timeIntervalMinutes)) {
+              calendar, view, currentAppointment, previousApp, previousApp.appointment!, timeIntervalMinutes)) {
             isIntersecting = true;
 
             if (intersectingApps == null) {
@@ -829,11 +736,8 @@ class AppointmentHelper {
           dict[dict.keys.length] = intersectingApps;
         } else if (intersectingApps.isNotEmpty) {
           position = intersectingApps
-              .reduce((AppointmentView currentAppview,
-                      AppointmentView nextAppview) =>
-                  currentAppview.maxPositions > nextAppview.maxPositions
-                      ? currentAppview
-                      : nextAppview)
+              .reduce((AppointmentView currentAppview, AppointmentView nextAppview) =>
+                  currentAppview.maxPositions > nextAppview.maxPositions ? currentAppview : nextAppview)
               .maxPositions;
         }
 
@@ -853,11 +757,8 @@ class AppointmentHelper {
           dict[dict.keys.length] = intersectingApps;
         } else if (intersectingApps.isNotEmpty) {
           maxPosition = intersectingApps
-              .reduce((AppointmentView currentAppview,
-                      AppointmentView nextAppview) =>
-                  currentAppview.maxPositions > nextAppview.maxPositions
-                      ? currentAppview
-                      : nextAppview)
+              .reduce((AppointmentView currentAppview, AppointmentView nextAppview) =>
+                  currentAppview.maxPositions > nextAppview.maxPositions ? currentAppview : nextAppview)
               .maxPositions;
 
           if (currentAppView.position == maxPosition) {
@@ -884,10 +785,8 @@ class AppointmentHelper {
   /// Convert the date time from appointment timezone value to calender timezone
   /// value. If calendar timezone value as null or empty then it convert
   /// it to local timezone value.
-  static DateTime convertTimeToAppointmentTimeZone(
-      DateTime date, String? appTimeZoneId, String? calendarTimeZoneId) {
-    if (((appTimeZoneId == null || appTimeZoneId == '') &&
-            (calendarTimeZoneId == null || calendarTimeZoneId == '')) ||
+  static DateTime convertTimeToAppointmentTimeZone(DateTime date, String? appTimeZoneId, String? calendarTimeZoneId) {
+    if (((appTimeZoneId == null || appTimeZoneId == '') && (calendarTimeZoneId == null || calendarTimeZoneId == '')) ||
         calendarTimeZoneId == appTimeZoneId) {
       return date;
     }
@@ -911,14 +810,8 @@ class AppointmentHelper {
         /// Create the specified date on appointment time zone.
         /// Eg., Appointment Time zone as Eastern time zone(-5.00) and it
         /// date is Nov 1 10AM, create the date using location.
-        final DateTime timeZoneDate = TZDateTime(
-            _timeZoneInfoToOlsonTimeZone(appTimeZoneId),
-            date.year,
-            date.month,
-            date.day,
-            date.hour,
-            date.minute,
-            date.second);
+        final DateTime timeZoneDate = TZDateTime(_timeZoneInfoToOlsonTimeZone(appTimeZoneId), date.year, date.month,
+            date.day, date.hour, date.minute, date.second);
 
         final Duration offset = DateTime.now().timeZoneOffset;
 
@@ -931,13 +824,8 @@ class AppointmentHelper {
         /// local time date based on resulted date.
         /// We does not use from method in TZDateTime because we does not
         /// know the local time zone location.
-        convertedDate = DateTime(
-            localTimeZoneDate.year,
-            localTimeZoneDate.month,
-            localTimeZoneDate.day,
-            localTimeZoneDate.hour,
-            localTimeZoneDate.minute,
-            localTimeZoneDate.second);
+        convertedDate = DateTime(localTimeZoneDate.year, localTimeZoneDate.month, localTimeZoneDate.day,
+            localTimeZoneDate.hour, localTimeZoneDate.minute, localTimeZoneDate.second);
       }
     }
 
@@ -945,36 +833,25 @@ class AppointmentHelper {
       DateTime actualConvertedDate;
       //// Convert the converted date with calendar time zone
       if (calendarTimeZoneId == 'Dateline Standard Time') {
-        actualConvertedDate =
-            convertedDate.toUtc().subtract(const Duration(hours: 12));
+        actualConvertedDate = convertedDate.toUtc().subtract(const Duration(hours: 12));
         //// Above mentioned actual converted date hold the date value which is equal to converted date, but the time zone value changed.
         //// So convert the schedule time zone date to current time zone date for rendering the appointment.
         return DateTime(
-            convertedDate.year +
-                (actualConvertedDate.year - convertedDate.year),
-            convertedDate.month +
-                (actualConvertedDate.month - convertedDate.month),
+            convertedDate.year + (actualConvertedDate.year - convertedDate.year),
+            convertedDate.month + (actualConvertedDate.month - convertedDate.month),
             convertedDate.day + (actualConvertedDate.day - convertedDate.day),
-            convertedDate.hour +
-                (actualConvertedDate.hour - convertedDate.hour),
-            convertedDate.minute +
-                (actualConvertedDate.minute - convertedDate.minute),
+            convertedDate.hour + (actualConvertedDate.hour - convertedDate.hour),
+            convertedDate.minute + (actualConvertedDate.minute - convertedDate.minute),
             convertedDate.second);
       } else {
-        final Location location =
-            _timeZoneInfoToOlsonTimeZone(calendarTimeZoneId);
+        final Location location = _timeZoneInfoToOlsonTimeZone(calendarTimeZoneId);
 
         /// Convert the local time to calendar time zone.
         actualConvertedDate = TZDateTime.from(convertedDate, location);
 
         /// Return the calendar time zone value with local time zone.
-        return DateTime(
-            actualConvertedDate.year,
-            actualConvertedDate.month,
-            actualConvertedDate.day,
-            actualConvertedDate.hour,
-            actualConvertedDate.minute,
-            actualConvertedDate.second);
+        return DateTime(actualConvertedDate.year, actualConvertedDate.month, actualConvertedDate.day,
+            actualConvertedDate.hour, actualConvertedDate.minute, actualConvertedDate.second);
       }
     }
 
@@ -983,12 +860,8 @@ class AppointmentHelper {
 
   /// Return the visible appointment collection based on visible start and
   /// end date.
-  static List<CalendarAppointment> getVisibleAppointments(
-      DateTime visibleStartDate,
-      DateTime visibleEndDate,
-      List<CalendarAppointment> appointments,
-      String? calendarTimeZone,
-      bool isTimelineView,
+  static List<CalendarAppointment> getVisibleAppointments(DateTime visibleStartDate, DateTime visibleEndDate,
+      List<CalendarAppointment> appointments, String? calendarTimeZone, bool isTimelineView,
       {bool canCreateNewAppointment = true}) {
     final List<CalendarAppointment> appointmentColl = <CalendarAppointment>[];
     final DateTime startDate = convertToStartTime(visibleStartDate);
@@ -998,16 +871,11 @@ class AppointmentHelper {
     for (int j = 0; j < count; j++) {
       final CalendarAppointment calendarAppointment = appointments[j];
       calendarAppointment.actualStartTime = convertTimeToAppointmentTimeZone(
-          calendarAppointment.startTime,
-          calendarAppointment.startTimeZone,
-          calendarTimeZone);
+          calendarAppointment.startTime, calendarAppointment.startTimeZone, calendarTimeZone);
       calendarAppointment.actualEndTime = convertTimeToAppointmentTimeZone(
-          calendarAppointment.endTime,
-          calendarAppointment.endTimeZone,
-          calendarTimeZone);
+          calendarAppointment.endTime, calendarAppointment.endTimeZone, calendarTimeZone);
 
-      final List<CalendarAppointment> tempAppointments =
-          <CalendarAppointment>[];
+      final List<CalendarAppointment> tempAppointments = <CalendarAppointment>[];
 
       /// Stored the actual start time to exact start time to use the value,
       /// since, we split the span appointment into multiple instances and
@@ -1016,10 +884,8 @@ class AppointmentHelper {
       /// stored the value in the exact start and end time.
       calendarAppointment.exactStartTime = calendarAppointment.actualStartTime;
       calendarAppointment.exactEndTime = calendarAppointment.actualEndTime;
-      if (calendarAppointment.recurrenceRule != null &&
-          calendarAppointment.recurrenceRule != '') {
-        _getRecurrenceAppointments(calendarAppointment, tempAppointments,
-            startDate, endDate, calendarTimeZone);
+      if (calendarAppointment.recurrenceRule != null && calendarAppointment.recurrenceRule != '') {
+        _getRecurrenceAppointments(calendarAppointment, tempAppointments, startDate, endDate, calendarTimeZone);
       } else {
         tempAppointments.add(calendarAppointment);
       }
@@ -1027,197 +893,141 @@ class AppointmentHelper {
       final int appointmentLength = tempAppointments.length;
       for (int i = 0; i < appointmentLength; i++) {
         final CalendarAppointment appointment = tempAppointments[i];
-        if (isAppointmentWithinVisibleDateRange(
-            appointment, startDate, endDate)) {
+        if (isAppointmentWithinVisibleDateRange(appointment, startDate, endDate)) {
           /// can create new appointment boolean is used to skip the new
           /// appointment creation while the appointment start and end date as
           /// different and appointment duration is not more than 24 hours.
           ///
           /// The bool value assigned to false when calendar view as schedule.
           if (canCreateNewAppointment &&
-              !(appointment.exactStartTime.day ==
-                      appointment.exactEndTime.day &&
-                  appointment.exactStartTime.year ==
-                      appointment.exactEndTime.year &&
-                  appointment.exactStartTime.month ==
-                      appointment.exactEndTime.month) &&
+              !(appointment.exactStartTime.day == appointment.exactEndTime.day &&
+                  appointment.exactStartTime.year == appointment.exactEndTime.year &&
+                  appointment.exactStartTime.month == appointment.exactEndTime.month) &&
               appointment.exactStartTime.isBefore(appointment.exactEndTime) &&
-              getDifference(
-                          appointment.exactStartTime, appointment.exactEndTime)
-                      .inDays ==
-                  0 &&
-              (appointment.exactEndTime.hour != 0 ||
-                  appointment.exactEndTime.minute != 0) &&
+              getDifference(appointment.exactStartTime, appointment.exactEndTime).inDays == 0 &&
+              (appointment.exactEndTime.hour != 0 || appointment.exactEndTime.minute != 0) &&
               !appointment.isAllDay &&
               !isTimelineView) {
             for (int i = 0; i < 2; i++) {
               final CalendarAppointment spannedAppointment = _copy(appointment);
               if (i == 0) {
-                spannedAppointment.actualEndTime = DateTime(
-                    appointment.exactStartTime.year,
-                    appointment.exactStartTime.month,
-                    appointment.exactStartTime.day,
-                    23,
-                    59,
-                    59);
+                spannedAppointment.actualEndTime = DateTime(appointment.exactStartTime.year,
+                    appointment.exactStartTime.month, appointment.exactStartTime.day, 23, 59, 59);
               } else {
                 spannedAppointment.actualStartTime = DateTime(
-                    appointment.exactEndTime.year,
-                    appointment.exactEndTime.month,
-                    appointment.exactEndTime.day);
+                    appointment.exactEndTime.year, appointment.exactEndTime.month, appointment.exactEndTime.day);
               }
 
               spannedAppointment.startTime = spannedAppointment.isAllDay
                   ? appointment.actualStartTime
                   : convertTimeToAppointmentTimeZone(
-                      appointment.actualStartTime,
-                      calendarTimeZone,
-                      appointment.startTimeZone);
+                      appointment.actualStartTime, calendarTimeZone, appointment.startTimeZone);
               spannedAppointment.endTime = spannedAppointment.isAllDay
                   ? appointment.actualEndTime
-                  : convertTimeToAppointmentTimeZone(appointment.actualEndTime,
-                      calendarTimeZone, appointment.endTimeZone);
+                  : convertTimeToAppointmentTimeZone(
+                      appointment.actualEndTime, calendarTimeZone, appointment.endTimeZone);
 
               // Adding Spanned Appointment only when the Appointment range
               // within the VisibleDate
-              if (isAppointmentWithinVisibleDateRange(
-                  spannedAppointment, startDate, endDate)) {
+              if (isAppointmentWithinVisibleDateRange(spannedAppointment, startDate, endDate)) {
                 appointmentColl.add(spannedAppointment);
               }
             }
-          } else if (!(appointment.exactStartTime.day ==
-                      appointment.exactEndTime.day &&
-                  appointment.exactStartTime.year ==
-                      appointment.exactEndTime.year &&
-                  appointment.exactStartTime.month ==
-                      appointment.exactEndTime.month) &&
+          } else if (!(appointment.exactStartTime.day == appointment.exactEndTime.day &&
+                  appointment.exactStartTime.year == appointment.exactEndTime.year &&
+                  appointment.exactStartTime.month == appointment.exactEndTime.month) &&
               appointment.exactStartTime.isBefore(appointment.exactEndTime) &&
               isTimelineView) {
             //// Check the spanned appointment with in current visible dates. example visible date 21 to 27 and
             //// the appointment start and end date as 23 and 25.
-            if (_isAppointmentInVisibleDateRange(
-                appointment, startDate, endDate)) {
+            if (_isAppointmentInVisibleDateRange(appointment, startDate, endDate)) {
               appointment.isSpanned = _isSpanned(appointment);
               appointmentColl.add(appointment);
-            } else if (_isAppointmentDateWithinVisibleDateRange(
-                appointment.actualStartTime, startDate, endDate)) {
+            } else if (_isAppointmentDateWithinVisibleDateRange(appointment.actualStartTime, startDate, endDate)) {
               //// Check the spanned appointment start date with in current visible dates.
               //// example visible date 21 to 27 and the appointment start and end date as 23 and 28.
               for (int i = 0; i < 2; i++) {
-                final CalendarAppointment spannedAppointment =
-                    _copy(appointment);
+                final CalendarAppointment spannedAppointment = _copy(appointment);
                 if (i == 0) {
-                  spannedAppointment.actualEndTime = DateTime(
-                      endDate.year, endDate.month, endDate.day, 23, 59, 59);
+                  spannedAppointment.actualEndTime = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
                 } else {
-                  spannedAppointment.actualStartTime =
-                      DateTime(endDate.year, endDate.month, endDate.day);
+                  spannedAppointment.actualStartTime = DateTime(endDate.year, endDate.month, endDate.day);
                 }
 
                 spannedAppointment.startTime = spannedAppointment.isAllDay
                     ? appointment.actualStartTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualStartTime,
-                        calendarTimeZone,
-                        appointment.startTimeZone);
+                        appointment.actualStartTime, calendarTimeZone, appointment.startTimeZone);
                 spannedAppointment.endTime = spannedAppointment.isAllDay
                     ? appointment.actualEndTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualEndTime,
-                        calendarTimeZone,
-                        appointment.endTimeZone);
+                        appointment.actualEndTime, calendarTimeZone, appointment.endTimeZone);
 
                 // Adding Spanned Appointment only when the Appointment range
                 // within the VisibleDate
-                if (_isAppointmentInVisibleDateRange(
-                    spannedAppointment, startDate, endDate)) {
+                if (_isAppointmentInVisibleDateRange(spannedAppointment, startDate, endDate)) {
                   spannedAppointment.isSpanned = _isSpanned(spannedAppointment);
                   appointmentColl.add(spannedAppointment);
                 }
               }
-            } else if (_isAppointmentDateWithinVisibleDateRange(
-                appointment.actualEndTime, startDate, endDate)) {
+            } else if (_isAppointmentDateWithinVisibleDateRange(appointment.actualEndTime, startDate, endDate)) {
               //// Check the spanned appointment end date with in current visible dates. example visible date 21 to 27 and
               //// the appointment start and end date as 18 and 24.
               for (int i = 0; i < 2; i++) {
-                final CalendarAppointment spannedAppointment =
-                    _copy(appointment);
+                final CalendarAppointment spannedAppointment = _copy(appointment);
                 if (i == 0) {
-                  spannedAppointment.actualStartTime =
-                      appointment.actualStartTime;
-                  final DateTime date =
-                      DateTimeHelper.getDateTimeValue(addDays(startDate, -1));
-                  spannedAppointment.actualEndTime =
-                      DateTime(date.year, date.month, date.day, 23, 59, 59);
+                  spannedAppointment.actualStartTime = appointment.actualStartTime;
+                  final DateTime date = DateTimeHelper.getDateTimeValue(addDays(startDate, -1));
+                  spannedAppointment.actualEndTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
                 } else {
-                  spannedAppointment.actualStartTime =
-                      DateTime(startDate.year, startDate.month, startDate.day);
+                  spannedAppointment.actualStartTime = DateTime(startDate.year, startDate.month, startDate.day);
                 }
 
                 spannedAppointment.startTime = spannedAppointment.isAllDay
                     ? appointment.actualStartTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualStartTime,
-                        calendarTimeZone,
-                        appointment.startTimeZone);
+                        appointment.actualStartTime, calendarTimeZone, appointment.startTimeZone);
                 spannedAppointment.endTime = spannedAppointment.isAllDay
                     ? appointment.actualEndTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualEndTime,
-                        calendarTimeZone,
-                        appointment.endTimeZone);
+                        appointment.actualEndTime, calendarTimeZone, appointment.endTimeZone);
 
                 // Adding Spanned Appointment only when the Appointment range
                 // within the VisibleDate
-                if (_isAppointmentInVisibleDateRange(
-                    spannedAppointment, startDate, endDate)) {
+                if (_isAppointmentInVisibleDateRange(spannedAppointment, startDate, endDate)) {
                   spannedAppointment.isSpanned = _isSpanned(spannedAppointment);
                   appointmentColl.add(spannedAppointment);
                 }
               }
-            } else if (!_isAppointmentDateWithinVisibleDateRange(
-                    appointment.actualEndTime, startDate, endDate) &&
-                !_isAppointmentDateWithinVisibleDateRange(
-                    appointment.actualStartTime, startDate, endDate)) {
+            } else if (!_isAppointmentDateWithinVisibleDateRange(appointment.actualEndTime, startDate, endDate) &&
+                !_isAppointmentDateWithinVisibleDateRange(appointment.actualStartTime, startDate, endDate)) {
               //// Check the spanned appointment start and end date not in current visible dates. example visible date 21 to 27 and
               //// the appointment start and end date as 18 and 28.
               for (int i = 0; i < 3; i++) {
-                final CalendarAppointment spannedAppointment =
-                    _copy(appointment);
+                final CalendarAppointment spannedAppointment = _copy(appointment);
                 if (i == 0) {
-                  final DateTime date =
-                      DateTimeHelper.getDateTimeValue(addDays(startDate, -1));
-                  spannedAppointment.actualEndTime =
-                      DateTime(date.year, date.month, date.day, 23, 59, 59);
+                  final DateTime date = DateTimeHelper.getDateTimeValue(addDays(startDate, -1));
+                  spannedAppointment.actualEndTime = DateTime(date.year, date.month, date.day, 23, 59, 59);
                 } else if (i == 1) {
-                  spannedAppointment.actualStartTime =
-                      DateTime(startDate.year, startDate.month, startDate.day);
-                  spannedAppointment.actualEndTime = DateTime(
-                      endDate.year, endDate.month, endDate.day, 23, 59, 59);
+                  spannedAppointment.actualStartTime = DateTime(startDate.year, startDate.month, startDate.day);
+                  spannedAppointment.actualEndTime = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
                 } else {
-                  final DateTime date =
-                      DateTimeHelper.getDateTimeValue(addDays(endDate, 1));
-                  spannedAppointment.actualStartTime =
-                      DateTime(date.year, date.month, date.day);
+                  final DateTime date = DateTimeHelper.getDateTimeValue(addDays(endDate, 1));
+                  spannedAppointment.actualStartTime = DateTime(date.year, date.month, date.day);
                 }
 
                 spannedAppointment.startTime = spannedAppointment.isAllDay
                     ? appointment.actualStartTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualStartTime,
-                        calendarTimeZone,
-                        appointment.startTimeZone);
+                        appointment.actualStartTime, calendarTimeZone, appointment.startTimeZone);
                 spannedAppointment.endTime = spannedAppointment.isAllDay
                     ? appointment.actualEndTime
                     : convertTimeToAppointmentTimeZone(
-                        appointment.actualEndTime,
-                        calendarTimeZone,
-                        appointment.endTimeZone);
+                        appointment.actualEndTime, calendarTimeZone, appointment.endTimeZone);
 
                 // Adding Spanned Appointment only when the Appointment range
                 // within the VisibleDate
-                if (_isAppointmentInVisibleDateRange(
-                    spannedAppointment, startDate, endDate)) {
+                if (_isAppointmentInVisibleDateRange(spannedAppointment, startDate, endDate)) {
                   spannedAppointment.isSpanned = _isSpanned(spannedAppointment);
                   appointmentColl.add(spannedAppointment);
                 }
@@ -1237,35 +1047,24 @@ class AppointmentHelper {
   }
 
   static CalendarAppointment _cloneRecurrenceAppointment(
-      CalendarAppointment appointment,
-      DateTime recursiveDate,
-      String? calendarTimeZone) {
+      CalendarAppointment appointment, DateTime recursiveDate, String? calendarTimeZone) {
     final CalendarAppointment occurrenceAppointment = _copy(appointment);
     occurrenceAppointment.actualStartTime = recursiveDate;
     occurrenceAppointment.startTime = occurrenceAppointment.isAllDay
         ? occurrenceAppointment.actualStartTime
         : convertTimeToAppointmentTimeZone(
-            occurrenceAppointment.actualStartTime,
-            calendarTimeZone,
-            occurrenceAppointment.startTimeZone);
+            occurrenceAppointment.actualStartTime, calendarTimeZone, occurrenceAppointment.startTimeZone);
 
-    final int minutes =
-        getDifference(appointment.actualStartTime, appointment.actualEndTime)
-            .inMinutes;
-    occurrenceAppointment.actualEndTime = DateTimeHelper.getDateTimeValue(
-        addDuration(
-            occurrenceAppointment.actualStartTime, Duration(minutes: minutes)));
+    final int minutes = getDifference(appointment.actualStartTime, appointment.actualEndTime).inMinutes;
+    occurrenceAppointment.actualEndTime =
+        DateTimeHelper.getDateTimeValue(addDuration(occurrenceAppointment.actualStartTime, Duration(minutes: minutes)));
     occurrenceAppointment.endTime = occurrenceAppointment.isAllDay
         ? occurrenceAppointment.actualEndTime
-        : convertTimeToAppointmentTimeZone(occurrenceAppointment.actualEndTime,
-            calendarTimeZone, occurrenceAppointment.endTimeZone);
+        : convertTimeToAppointmentTimeZone(
+            occurrenceAppointment.actualEndTime, calendarTimeZone, occurrenceAppointment.endTimeZone);
     occurrenceAppointment.isSpanned = _isSpanned(occurrenceAppointment) &&
-        getDifference(occurrenceAppointment.startTime,
-                    occurrenceAppointment.endTime)
-                .inDays >
-            0;
-    occurrenceAppointment.exactStartTime =
-        occurrenceAppointment.actualStartTime;
+        getDifference(occurrenceAppointment.startTime, occurrenceAppointment.endTime).inDays > 0;
+    occurrenceAppointment.exactStartTime = occurrenceAppointment.actualStartTime;
     occurrenceAppointment.exactEndTime = occurrenceAppointment.actualEndTime;
 
     return occurrenceAppointment;
@@ -1276,8 +1075,7 @@ class AppointmentHelper {
   static List<CalendarAppointment> generateCalendarAppointments(
       CalendarDataSource? calendarData, String? calendarTimeZone,
       [List<dynamic>? appointments]) {
-    final List<CalendarAppointment> calendarAppointmentCollection =
-        <CalendarAppointment>[];
+    final List<CalendarAppointment> calendarAppointmentCollection = <CalendarAppointment>[];
     if (calendarData == null) {
       return calendarAppointmentCollection;
     }
@@ -1298,29 +1096,24 @@ class AppointmentHelper {
         final DateTime appEndTime = item.endTime;
         item.data = item;
         item.actualStartTime = !item.isAllDay
-            ? convertTimeToAppointmentTimeZone(
-                item.startTime, item.startTimeZone, calendarTimeZone)
+            ? convertTimeToAppointmentTimeZone(item.startTime, item.startTimeZone, calendarTimeZone)
             : item.startTime;
         item.actualEndTime = !item.isAllDay
-            ? convertTimeToAppointmentTimeZone(
-                item.endTime, item.endTimeZone, calendarTimeZone)
+            ? convertTimeToAppointmentTimeZone(item.endTime, item.endTimeZone, calendarTimeZone)
             : item.endTime;
         _updateTimeForInvalidEndTime(item, calendarTimeZone);
         calendarAppointmentCollection.add(item);
 
-        item.isSpanned = _isSpanned(item) &&
-            getDifference(appStartTime, appEndTime).inDays > 0;
+        item.isSpanned = _isSpanned(item) && getDifference(appStartTime, appEndTime).inDays > 0;
       }
     } else {
       for (int i = 0; i < dataSource.length; i++) {
         final dynamic item = dataSource[i];
-        final CalendarAppointment app =
-            _createAppointment(item, calendarData, calendarTimeZone);
+        final CalendarAppointment app = _createAppointment(item, calendarData, calendarTimeZone);
 
         final DateTime appStartTime = app.startTime;
         final DateTime appEndTime = app.endTime;
-        app.isSpanned = _isSpanned(app) &&
-            getDifference(appStartTime, appEndTime).inDays > 0;
+        app.isSpanned = _isSpanned(app) && getDifference(appStartTime, appEndTime).inDays > 0;
         calendarAppointmentCollection.add(app);
       }
     }
@@ -1328,8 +1121,8 @@ class AppointmentHelper {
     return calendarAppointmentCollection;
   }
 
-  static CalendarAppointment _createAppointment(Object appointmentObject,
-      CalendarDataSource calendarData, String? calendarTimeZone) {
+  static CalendarAppointment _createAppointment(
+      Object appointmentObject, CalendarDataSource calendarData, String? calendarTimeZone) {
     CalendarAppointment app;
     if (appointmentObject is Appointment) {
       app = CalendarAppointment(
@@ -1360,8 +1153,7 @@ class AppointmentHelper {
           startTimeZone: calendarData.getStartTimeZone(index),
           endTimeZone: calendarData.getEndTimeZone(index),
           recurrenceRule: calendarData.getRecurrenceRule(index),
-          recurrenceExceptionDates:
-              calendarData.getRecurrenceExceptionDates(index),
+          recurrenceExceptionDates: calendarData.getRecurrenceExceptionDates(index),
           resourceIds: calendarData.getResourceIds(index),
           recurrenceId: calendarData.getRecurrenceId(index),
           id: calendarData.getId(index));
@@ -1369,38 +1161,28 @@ class AppointmentHelper {
 
     app.data = appointmentObject;
     app.actualStartTime = !app.isAllDay
-        ? convertTimeToAppointmentTimeZone(
-            app.startTime, app.startTimeZone, calendarTimeZone)
+        ? convertTimeToAppointmentTimeZone(app.startTime, app.startTimeZone, calendarTimeZone)
         : app.startTime;
-    app.actualEndTime = !app.isAllDay
-        ? convertTimeToAppointmentTimeZone(
-            app.endTime, app.endTimeZone, calendarTimeZone)
-        : app.endTime;
+    app.actualEndTime =
+        !app.isAllDay ? convertTimeToAppointmentTimeZone(app.endTime, app.endTimeZone, calendarTimeZone) : app.endTime;
     _updateTimeForInvalidEndTime(app, calendarTimeZone);
     return app;
   }
 
-  static void _updateTimeForInvalidEndTime(
-      CalendarAppointment appointment, String? scheduleTimeZone) {
-    if (appointment.actualEndTime.isBefore(appointment.actualStartTime) &&
-        !appointment.isAllDay) {
+  static void _updateTimeForInvalidEndTime(CalendarAppointment appointment, String? scheduleTimeZone) {
+    if (appointment.actualEndTime.isBefore(appointment.actualStartTime) && !appointment.isAllDay) {
       appointment.endTime = convertTimeToAppointmentTimeZone(
           addDuration(appointment.actualStartTime, const Duration(minutes: 30)),
           scheduleTimeZone,
           appointment.endTimeZone);
       appointment.actualEndTime = !appointment.isAllDay
-          ? convertTimeToAppointmentTimeZone(
-              appointment.endTime, appointment.endTimeZone, scheduleTimeZone)
+          ? convertTimeToAppointmentTimeZone(appointment.endTime, appointment.endTimeZone, scheduleTimeZone)
           : appointment.endTime;
     }
   }
 
-  static void _getRecurrenceAppointments(
-      CalendarAppointment appointment,
-      List<CalendarAppointment> appointments,
-      DateTime visibleStartDate,
-      DateTime visibleEndDate,
-      String? scheduleTimeZone) {
+  static void _getRecurrenceAppointments(CalendarAppointment appointment, List<CalendarAppointment> appointments,
+      DateTime visibleStartDate, DateTime visibleEndDate, String? scheduleTimeZone) {
     final DateTime appStartTime = appointment.actualStartTime;
     if (appStartTime.isAfter(visibleEndDate)) {
       return;
@@ -1414,13 +1196,11 @@ class AppointmentHelper {
       rule = rule + newSubString;
     }
 
-    final List<DateTime> recursiveDates =
-        RecurrenceHelper.getRecurrenceDateTimeCollection(
-            rule, appointment.actualStartTime,
-            recurrenceDuration: getDifference(
-                appointment.exactStartTime, appointment.exactEndTime),
-            specificStartDate: visibleStartDate,
-            specificEndDate: visibleEndDate);
+    final List<DateTime> recursiveDates = RecurrenceHelper.getRecurrenceDateTimeCollection(
+        rule, appointment.actualStartTime,
+        recurrenceDuration: getDifference(appointment.exactStartTime, appointment.exactEndTime),
+        specificStartDate: visibleStartDate,
+        specificEndDate: visibleEndDate);
 
     List<DateTime> recDates = <DateTime>[];
     if (recursiveDates.isNotEmpty) {
@@ -1435,8 +1215,7 @@ class AppointmentHelper {
         countRule = '$countRule;COUNT=1';
       }
 
-      recDates = RecurrenceHelper.getRecurrenceDateTimeCollection(
-          countRule, appointment.actualStartTime,
+      recDates = RecurrenceHelper.getRecurrenceDateTimeCollection(countRule, appointment.actualStartTime,
           specificStartDate: appointment.startTime);
     }
 
@@ -1445,11 +1224,9 @@ class AppointmentHelper {
       if (appointment.recurrenceExceptionDates != null) {
         bool isDateContains = false;
         for (int i = 0; i < appointment.recurrenceExceptionDates!.length; i++) {
-          final DateTime date = convertTimeToAppointmentTimeZone(
-              appointment.recurrenceExceptionDates![i], '', scheduleTimeZone);
-          if (date.year == recursiveDate.year &&
-              date.month == recursiveDate.month &&
-              date.day == recursiveDate.day) {
+          final DateTime date =
+              convertTimeToAppointmentTimeZone(appointment.recurrenceExceptionDates![i], '', scheduleTimeZone);
+          if (date.year == recursiveDate.year && date.month == recursiveDate.month && date.day == recursiveDate.day) {
             isDateContains = true;
             break;
           }
@@ -1460,15 +1237,13 @@ class AppointmentHelper {
       }
 
       final CalendarAppointment occurrenceAppointment =
-          _cloneRecurrenceAppointment(
-              appointment, recursiveDate, scheduleTimeZone);
+          _cloneRecurrenceAppointment(appointment, recursiveDate, scheduleTimeZone);
 
       /// Here we used isOccurrenceAppointment keyword to identify the
       /// occurrence appointment When we clone the pattern appointment for
       /// occurrence appointment we have append the string in the notes and
       /// here we identify based on the string and removed the appended string.
-      occurrenceAppointment.notes = recDates.isNotEmpty &&
-              isSameDate(occurrenceAppointment.startTime, recDates[0])
+      occurrenceAppointment.notes = recDates.isNotEmpty && isSameDate(occurrenceAppointment.startTime, recDates[0])
           ? appointment.notes
           : appointment.notes == null
               ? 'isOccurrenceAppointment'

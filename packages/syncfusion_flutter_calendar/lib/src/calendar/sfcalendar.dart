@@ -3076,6 +3076,7 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           final bool isResourceEnabled = CalendarViewHelper.isResourceEnabled(widget.dataSource, _view);
           final double resourceViewSize = isResourceEnabled ? widget.resourceViewSettings.size : 0;
@@ -4094,6 +4095,7 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
       case CalendarView.week:
       case CalendarView.workWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           if (isSameDate(_currentDate, _controller.displayDate) ||
               isDateWithInDateRange(_currentViewVisibleDates[0],
@@ -9264,6 +9266,7 @@ class _CalendarHeaderViewState extends State<_CalendarHeaderView> {
         }
         break;
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           return DateTimeHelper.getWeekNumberOfYear(widget.timelineMonthWeekNumberNotifier.value!).toString();
         }
@@ -9291,6 +9294,7 @@ class _CalendarHeaderViewState extends State<_CalendarHeaderView> {
         }
       case CalendarView.month:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           final DateTime startDate = widget.visibleDates[0];
           final DateTime endDate = widget.visibleDates[widget.visibleDates.length - 1];

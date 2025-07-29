@@ -2100,8 +2100,13 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView> wit
         widget.calendar.timeSlotViewSettings.numberOfDaysInView,
         nonWorkingDays);
 
-    final DateTime currentDate = DateTime(_updateCalendarStateDetails.currentDate!.year,
+    DateTime currentDate = DateTime(_updateCalendarStateDetails.currentDate!.year,
         _updateCalendarStateDetails.currentDate!.month, _updateCalendarStateDetails.currentDate!.day);
+
+    // For timeline custom month, start from 2 days before current date
+    if (widget.view == CalendarView.timelineCustomMonth) {
+      currentDate = DateTimeHelper.getDateTimeValue(addDays(currentDate, -2));
+    }
     final DateTime prevDate = DateTimeHelper.getPreviousViewStartDate(widget.view,
         widget.calendar.monthViewSettings.numberOfWeeksInView, currentDate, visibleDatesCount, nonWorkingDays);
     final DateTime nextDate = DateTimeHelper.getNextViewStartDate(widget.view,
@@ -3206,6 +3211,8 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView> wit
           case CalendarView.timelineWeek:
           case CalendarView.timelineWorkWeek:
           case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
+          case CalendarView.timelineCustomMonth:
             return i;
         }
       }
@@ -4903,6 +4910,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return _getTimelineView();
     }
   }
@@ -6747,10 +6755,12 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           final double timeIntervalSize = _getTimeIntervalHeight(widget.calendar, widget.view, widget.width,
               widget.height, widget.visibleDates.length, widget.isMobilePlatform);
-          double minimumTimeIntervalSize = timeIntervalSize / (widget.view == CalendarView.timelineMonth ? 2 : 4);
+          double minimumTimeIntervalSize = timeIntervalSize /
+              (widget.view == CalendarView.timelineMonth || widget.view == CalendarView.timelineCustomMonth ? 2 : 4);
           if (minimumTimeIntervalSize < 20) {
             minimumTimeIntervalSize = 20;
           }
@@ -7382,10 +7392,12 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return _getDetailsForTimeline(position);
       case CalendarView.schedule:
         return null;
     }
+    return null;
   }
 
   //// Get the calendar details for month cells and view header of month.
@@ -8433,6 +8445,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           final double horizontalLinesCount =
               CalendarViewHelper.getHorizontalLinesCount(calendar.timeSlotViewSettings, view);
@@ -9384,6 +9397,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           final double viewWidth = _timeIntervalHeight * (_horizontalLinesCount! * widget.visibleDates.length);
           if ((!_isRTL && x >= viewWidth) || (_isRTL && x < (widget.width - viewWidth))) {
@@ -9394,6 +9408,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
           return _getDateFromPositionForTimeline(cellWidth, cellHeight, x, y);
         }
     }
+    return null;
   }
 
   void _drawSelection(double x, double y, double timeLabelWidth) {
@@ -9841,6 +9856,7 @@ class _ViewHeaderViewPainter extends CustomPainter {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         break;
       case CalendarView.month:
         {
@@ -9877,6 +9893,7 @@ class _ViewHeaderViewPainter extends CustomPainter {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
       case CalendarView.schedule:
         return 0;
       case CalendarView.month:
@@ -10024,6 +10041,7 @@ class _ViewHeaderViewPainter extends CustomPainter {
       case CalendarView.timelineWeek:
       case CalendarView.timelineWorkWeek:
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         return <CustomPainterSemantics>[];
       case CalendarView.month:
         return _getSemanticsForMonthViewHeader(size);
@@ -10166,6 +10184,7 @@ class _SelectionPainter extends CustomPainter {
         }
         break;
       case CalendarView.timelineMonth:
+      case CalendarView.timelineCustomMonth:
         {
           if (selectedDate != null) {
             _drawTimelineMonthSelection(canvas, size, width);

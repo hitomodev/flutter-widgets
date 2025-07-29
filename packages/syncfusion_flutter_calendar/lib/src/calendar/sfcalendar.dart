@@ -10320,6 +10320,8 @@ Map<CalendarView, String> _getCalendarViewsText(SfLocalizations localizations) {
   calendarViews[CalendarView.timelineDay] = localizations.allowedViewTimelineDayLabel;
   calendarViews[CalendarView.timelineWeek] = localizations.allowedViewTimelineWeekLabel;
   calendarViews[CalendarView.timelineMonth] = localizations.allowedViewTimelineMonthLabel;
+  calendarViews[CalendarView.timelineCustomMonth] =
+      localizations.allowedViewTimelineMonthLabel; // Use same label as timelineMonth
   calendarViews[CalendarView.timelineWorkWeek] = localizations.allowedViewTimelineWorkWeekLabel;
   calendarViews[CalendarView.month] = localizations.allowedViewMonthLabel;
   calendarViews[CalendarView.schedule] = localizations.allowedViewScheduleLabel;

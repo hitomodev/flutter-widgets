@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -529,7 +527,6 @@ class CalendarViewHelper {
   /// method that raise the calendar tapped callback with the given parameters
   static void raiseCalendarTapCallback(SfCalendar calendar, DateTime? date, List<dynamic>? appointments,
       CalendarElement element, CalendarResource? resource) {
-    log('ABAStudio raiseCalendarTapCallback');
     calendar.onTap!(CalendarTapDetails(appointments, date, element, resource));
   }
 
@@ -608,7 +605,6 @@ class CalendarViewHelper {
 
   /// Returns the appointment details with given appointment type.
   static dynamic getAppointmentDetail(CalendarAppointment appointment, CalendarDataSource? dataSource) {
-    log('ABAStudio getAppointmentDetail');
     if (appointment.recurrenceRule != null && appointment.recurrenceRule!.isNotEmpty) {
       final Appointment appointmentObject = appointment.convertToCalendarAppointment();
       if (appointment.data is Appointment) {

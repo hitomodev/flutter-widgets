@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -826,7 +825,6 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
   }
 
   void _updateTimelineAppointmentDetails(List<CalendarAppointment> visibleAppointments) {
-    log('ABAStudio _updateTimelineAppointmentDetails');
     final bool isResourceEnabled = CalendarViewHelper.isResourceEnabled(widget.calendar.dataSource, widget.view);
 
     /// Filters the appointment for each resource from the visible appointment
@@ -982,7 +980,7 @@ class _AppointmentLayoutState extends State<AppointmentLayout> {
           AppointmentHelper.canAddBackwardSpanIcon(appStartTime, appEndTime, viewStartDate, viewEndDate);
       // if can forward just radius top left and bottom left
       // it can backward just radius top right and bottom right
-      final double widthToUse = width > 1 ? width - 1 : 0;
+      final double widthToUse = width > 1 ? width : 0;
       const double verticalPadding = 8.0;
       double heightToUse;
       double yPositionToUse = yPosition;
@@ -1691,8 +1689,6 @@ class _AppointmentRenderObject extends CustomCalendarRenderObject {
       }
 
       final RRect appointmentRect = appointmentView.appointmentRect!;
-      print(
-          'ABAStudio appointmentRect: ${appointmentRect.left} ${appointmentRect.top} ${appointmentRect.right} ${appointmentRect.bottom}');
       if (appointmentView.position < maximumDisplayCount ||
           (appointmentView.position == maximumDisplayCount && appointmentView.maxPositions == maximumDisplayCount)) {
         final CalendarAppointment appointment = appointmentView.appointment!;

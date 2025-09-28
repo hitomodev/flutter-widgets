@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -2959,7 +2958,6 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
     _isRTL = CalendarViewHelper.isRTLLayout(context);
     _themeData = Theme.of(context);
     _calendarTheme = _getThemeDataValue(SfCalendarTheme.of(context), _themeData);
-    print('ABAStudio ${widget.timeRegionBuilder}');
 
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       _minWidth = constraints.maxWidth == double.infinity ? _minWidth : constraints.maxWidth;
@@ -5978,8 +5976,6 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
             null);
       }
     } else {
-      log('ABAStudio _raiseCallbackForScheduleView');
-
       /// Calculate the touch position appointment from its collection.
       double currentYPosition = padding;
       final double itemHeight = CalendarViewHelper.getScheduleAppointmentHeight(null, widget.scheduleViewSettings);

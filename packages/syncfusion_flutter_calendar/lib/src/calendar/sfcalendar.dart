@@ -205,6 +205,7 @@ class SfCalendar extends StatefulWidget {
     this.allowViewNavigation = false,
     this.showCurrentTimeIndicator = true,
     this.cellEndPadding = -1,
+    this.bottomPadding = 0,
     this.viewNavigationMode = ViewNavigationMode.snap,
     this.allowedViews,
     this.specialRegions,
@@ -228,6 +229,7 @@ class SfCalendar extends StatefulWidget {
         assert(minDate == null || maxDate == null || minDate.isBefore(maxDate)),
         assert(minDate == null || maxDate == null || maxDate.isAfter(minDate)),
         assert(cellEndPadding >= -1),
+        assert(bottomPadding >= 0),
         initialDisplayDate =
             initialDisplayDate ?? DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 08, 45),
         minDate = minDate ?? DateTime(01),
@@ -1034,6 +1036,12 @@ class SfCalendar extends StatefulWidget {
   ///
   /// ```
   final double cellEndPadding;
+
+  /// Adds extra spacing at the bottom of scrollable views (day/week/workWeek
+  /// and timeline views) so the last appointment isn't obscured by overlays.
+  ///
+  /// Defaults to `0`.
+  final double bottomPadding;
 
   /// The text style for the text in the [Appointment] view in [SfCalendar].
   ///
@@ -7510,6 +7518,7 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
                                 resourceViewSize,
                                 panelHeight,
                                 widget.resourceViewHeaderBuilder),
+                            SizedBox(height: widget.bottomPadding),
                           ]),
                     ),
                     onTapUp: (TapUpDetails details) {

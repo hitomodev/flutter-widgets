@@ -3211,7 +3211,6 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView> wit
           case CalendarView.timelineWeek:
           case CalendarView.timelineWorkWeek:
           case CalendarView.timelineMonth:
-      case CalendarView.timelineCustomMonth:
           case CalendarView.timelineCustomMonth:
             return i;
         }
@@ -7373,6 +7372,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
                                   ),
                                   _getCurrentTimeIndicator(timeLabelSize, width, height, true),
                                 ]),
+                                SizedBox(height: widget.calendar.bottomPadding),
                               ])),
                     ])),
               ])),

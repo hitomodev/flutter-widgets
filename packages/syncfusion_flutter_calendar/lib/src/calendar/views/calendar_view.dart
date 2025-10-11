@@ -2103,9 +2103,9 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView> wit
     DateTime currentDate = DateTime(_updateCalendarStateDetails.currentDate!.year,
         _updateCalendarStateDetails.currentDate!.month, _updateCalendarStateDetails.currentDate!.day);
 
-    // For timeline custom month, start from 2 days before current date
     if (widget.view == CalendarView.timelineCustomMonth) {
-      currentDate = DateTimeHelper.getDateTimeValue(addDays(currentDate, -2));
+      currentDate = DateTimeHelper.getDateTimeValue(
+          addDays(currentDate, widget.calendar.timeSlotViewSettings.timelineCustomMonthBufferDays));
     }
     final DateTime prevDate = DateTimeHelper.getPreviousViewStartDate(widget.view,
         widget.calendar.monthViewSettings.numberOfWeeksInView, currentDate, visibleDatesCount, nonWorkingDays);

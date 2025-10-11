@@ -76,7 +76,8 @@ class TimeSlotViewSettings with Diagnosticable {
       this.todayBackgroundColor,
       this.weekendBackgroundColor,
       this.weekendTextColor,
-      this.numberOfDaysInView = -1})
+      this.numberOfDaysInView = -1,
+      this.timelineCustomMonthBufferDays = -2})
       : assert(startHour >= 0 && startHour <= 24),
         assert(endHour >= 0 && endHour <= 24),
         assert(timeIntervalHeight >= -1),
@@ -699,6 +700,32 @@ class TimeSlotViewSettings with Diagnosticable {
   ///  ```
   final int numberOfDaysInView;
 
+  /// The number of buffer days before the current date in timeline custom month view.
+  ///
+  /// Allows to customize the buffer days before the current date when calendar view is
+  /// [CalendarView.timelineCustomMonth] in calendar.
+  ///
+  /// Defaults to `-2`.
+  ///
+  /// This determines how many days before the current date will be shown in the
+  /// timeline custom month view. A negative value adds buffer days before the current date.
+  ///
+  /// ``` dart
+  ///
+  /// Widget build(BuildContext context) {
+  ///    return Container(
+  ///      child: SfCalendar(
+  ///        view: CalendarView.timelineCustomMonth,
+  ///        timeSlotViewSettings: TimeSlotViewSettings(
+  ///            timelineCustomMonthBufferDays: -3,
+  ///        ),
+  ///      ),
+  ///    );
+  ///  }
+  ///
+  ///  ```
+  final int timelineCustomMonthBufferDays;
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -727,7 +754,8 @@ class TimeSlotViewSettings with Diagnosticable {
         otherStyle.timeTextStyle == timeTextStyle &&
         otherStyle.todayBackgroundColor == todayBackgroundColor &&
         otherStyle.weekendBackgroundColor == weekendBackgroundColor &&
-        otherStyle.weekendTextColor == weekendTextColor;
+        otherStyle.weekendTextColor == weekendTextColor &&
+        otherStyle.timelineCustomMonthBufferDays == timelineCustomMonthBufferDays;
   }
 
   @override
@@ -750,6 +778,7 @@ class TimeSlotViewSettings with Diagnosticable {
     properties.add(ColorProperty('todayBackgroundColor', todayBackgroundColor));
     properties.add(ColorProperty('weekendBackgroundColor', weekendBackgroundColor));
     properties.add(ColorProperty('weekendTextColor', weekendTextColor));
+    properties.add(IntProperty('timelineCustomMonthBufferDays', timelineCustomMonthBufferDays));
   }
 
   @override

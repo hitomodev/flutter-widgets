@@ -7729,7 +7729,13 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       if (CalendarViewHelper.isResourceEnabled(widget.calendar.dataSource, widget.view)) {
         yPosition += _timelineViewVerticalScrollController!.offset;
         _selectedResourceIndex = _getSelectedResourceIndex(yPosition, viewHeaderHeight, timeLabelWidth);
-        selectedResource = widget.calendar.dataSource!.resources![_selectedResourceIndex];
+        // Fix: Check if index is in range before accessing resources
+        final List<CalendarResource>? resources = widget.calendar.dataSource!.resources;
+        if (resources != null && _selectedResourceIndex >= 0 && _selectedResourceIndex < resources.length) {
+          selectedResource = resources[_selectedResourceIndex];
+        } else {
+          selectedResource = null;
+        }
       }
 
       final int previousSelectedResourceIndex = _selectionPainter!.selectedResourceIndex;

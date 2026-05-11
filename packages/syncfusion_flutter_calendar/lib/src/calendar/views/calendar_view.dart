@@ -4997,6 +4997,7 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
 
     if (_timelineViewVerticalScrollController != null &&
         _timelineViewVerticalScrollController!.hasClients &&
+        widget.resourcePanelScrollController!.hasClients &&
         widget.resourcePanelScrollController!.offset != _timelineViewVerticalScrollController!.offset) {
       _timelineViewVerticalScrollController!.jumpTo(widget.resourcePanelScrollController!.offset);
     }
@@ -5014,7 +5015,10 @@ class _CalendarViewState extends State<_CalendarView> with TickerProviderStateMi
       return;
     }
 
-    if (widget.resourcePanelScrollController!.offset != _timelineViewVerticalScrollController!.offset) {
+    if (_timelineViewVerticalScrollController != null &&
+        _timelineViewVerticalScrollController!.hasClients &&
+        widget.resourcePanelScrollController!.hasClients &&
+        widget.resourcePanelScrollController!.offset != _timelineViewVerticalScrollController!.offset) {
       widget.resourcePanelScrollController!.jumpTo(_timelineViewVerticalScrollController!.offset);
     }
   }

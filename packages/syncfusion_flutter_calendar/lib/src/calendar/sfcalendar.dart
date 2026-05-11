@@ -7578,7 +7578,9 @@ class _SfCalendarState extends State<SfCalendar> with SingleTickerProviderStateM
   /// Returns the tapped resource details, based on the tapped position.
   CalendarResource _getTappedResource(double tappedPosition, double resourceItemHeight) {
     final int index = (_resourcePanelScrollController!.offset + tappedPosition) ~/ resourceItemHeight;
-    return _resourceCollection![index];
+    // Clamp the index to valid range to prevent RangeError
+    final int clampedIndex = index.clamp(0, _resourceCollection!.length - 1);
+    return _resourceCollection![clampedIndex];
   }
 
   /// Adds the custom scroll view which used to produce the infinity scroll.
